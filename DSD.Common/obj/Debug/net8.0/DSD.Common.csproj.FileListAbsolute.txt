@@ -1,0 +1,13 @@
+C:\CIS\PROGRAMS\DSD\DSD.Common\obj\Debug\net8.0\DSD.Common.csproj.AssemblyReference.cache
+C:\CIS\PROGRAMS\DSD\DSD.Common\obj\Debug\net8.0\DSD.Common.GeneratedMSBuildEditorConfig.editorconfig
+C:\CIS\PROGRAMS\DSD\DSD.Common\obj\Debug\net8.0\DSD.Common.AssemblyInfoInputs.cache
+C:\CIS\PROGRAMS\DSD\DSD.Common\obj\Debug\net8.0\DSD.Common.AssemblyInfo.cs
+C:\CIS\PROGRAMS\DSD\DSD.Common\obj\Debug\net8.0\DSD.Common.csproj.CoreCompileInputs.cache
+C:\CIS\PROGRAMS\DSD\DSD.Common\bin\Debug\net8.0\DSD.Common.deps.json
+C:\CIS\PROGRAMS\DSD\DSD.Common\bin\Debug\net8.0\DSD.Common.dll
+C:\CIS\PROGRAMS\DSD\DSD.Common\bin\Debug\net8.0\DSD.Common.pdb
+C:\CIS\PROGRAMS\DSD\DSD.Common\obj\Debug\net8.0\DSD.Common.dll
+C:\CIS\PROGRAMS\DSD\DSD.Common\obj\Debug\net8.0\refint\DSD.Common.dll
+C:\CIS\PROGRAMS\DSD\DSD.Common\obj\Debug\net8.0\DSD.Common.pdb
+C:\CIS\PROGRAMS\DSD\DSD.Common\obj\Debug\net8.0\ref\DSD.Common.dll
+C:\CIS\Programs\DSD\DSD.Common\obj\Debug\net8.0\DSD.Common.sourcelink.json

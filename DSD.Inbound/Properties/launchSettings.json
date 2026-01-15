@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DSD.Inbound": {
+      "commandName": "Project",
+      "commandLineArgs": "DEMO ALL Y"
+    }
+  }
+}

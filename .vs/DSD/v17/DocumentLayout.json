@@ -1,0 +1,117 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\CIS\\Programs\\DSD\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6510A8FF-E402-4D97-AFA4-D09BA70A5FEE}|DSD.Inbound\\DSD.Inbound.csproj|c:\\cis\\programs\\dsd\\dsd.inbound\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{6510A8FF-E402-4D97-AFA4-D09BA70A5FEE}|DSD.Inbound\\DSD.Inbound.csproj|solutionrelative:dsd.inbound\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C9AB030D-7CDC-4178-9E41-5D21CF679B7D}|DSD.Outbound\\DSD.Outbound.csproj|c:\\cis\\programs\\dsd\\dsd.outbound\\runners\\outboundapprunner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C9AB030D-7CDC-4178-9E41-5D21CF679B7D}|DSD.Outbound\\DSD.Outbound.csproj|solutionrelative:dsd.outbound\\runners\\outboundapprunner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6510A8FF-E402-4D97-AFA4-D09BA70A5FEE}|DSD.Inbound\\DSD.Inbound.csproj|c:\\cis\\programs\\dsd\\dsd.inbound\\runners\\inboundapprunner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6510A8FF-E402-4D97-AFA4-D09BA70A5FEE}|DSD.Inbound\\DSD.Inbound.csproj|solutionrelative:dsd.inbound\\runners\\inboundapprunner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6510A8FF-E402-4D97-AFA4-D09BA70A5FEE}|DSD.Inbound\\DSD.Inbound.csproj|c:\\cis\\programs\\dsd\\dsd.inbound\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6510A8FF-E402-4D97-AFA4-D09BA70A5FEE}|DSD.Inbound\\DSD.Inbound.csproj|solutionrelative:dsd.inbound\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{75FCDD4C-795D-4A18-92E7-39698B6C2DD3}|DSD.Common\\DSD.Common.csproj|c:\\cis\\programs\\dsd\\dsd.common\\services\\csvhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{75FCDD4C-795D-4A18-92E7-39698B6C2DD3}|DSD.Common\\DSD.Common.csproj|solutionrelative:dsd.common\\services\\csvhelperservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{75FCDD4C-795D-4A18-92E7-39698B6C2DD3}|DSD.Common\\DSD.Common.csproj|c:\\cis\\programs\\dsd\\dsd.common\\services\\sqlservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{75FCDD4C-795D-4A18-92E7-39698B6C2DD3}|DSD.Common\\DSD.Common.csproj|solutionrelative:dsd.common\\services\\sqlservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\CIS\\Programs\\DSD\\DSD.Inbound\\appsettings.json",
+              "RelativeDocumentMoniker": "DSD.Inbound\\appsettings.json",
+              "ToolTip": "C:\\CIS\\Programs\\DSD\\DSD.Inbound\\appsettings.json",
+              "RelativeToolTip": "DSD.Inbound\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-01-14T15:27:10.881Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "OutboundAppRunner.cs",
+              "DocumentMoniker": "C:\\CIS\\Programs\\DSD\\DSD.Outbound\\Runners\\OutboundAppRunner.cs",
+              "RelativeDocumentMoniker": "DSD.Outbound\\Runners\\OutboundAppRunner.cs",
+              "ToolTip": "C:\\CIS\\Programs\\DSD\\DSD.Outbound\\Runners\\OutboundAppRunner.cs",
+              "RelativeToolTip": "DSD.Outbound\\Runners\\OutboundAppRunner.cs",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-14T15:25:05.324Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CsvHelperService.cs",
+              "DocumentMoniker": "C:\\CIS\\Programs\\DSD\\DSD.Common\\Services\\CsvHelperService.cs",
+              "RelativeDocumentMoniker": "DSD.Common\\Services\\CsvHelperService.cs",
+              "ToolTip": "C:\\CIS\\Programs\\DSD\\DSD.Common\\Services\\CsvHelperService.cs",
+              "RelativeToolTip": "DSD.Common\\Services\\CsvHelperService.cs",
+              "ViewState": "AgIAACYAAAAAAAAAAAAUwE4AAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-14T14:55:56.6Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "SqlService.cs",
+              "DocumentMoniker": "C:\\CIS\\Programs\\DSD\\DSD.Common\\Services\\SqlService.cs",
+              "RelativeDocumentMoniker": "DSD.Common\\Services\\SqlService.cs",
+              "ToolTip": "C:\\CIS\\Programs\\DSD\\DSD.Common\\Services\\SqlService.cs",
+              "RelativeToolTip": "DSD.Common\\Services\\SqlService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQBAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T20:51:01.23Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "InboundAppRunner.cs",
+              "DocumentMoniker": "C:\\CIS\\Programs\\DSD\\DSD.Inbound\\Runners\\InboundAppRunner.cs",
+              "RelativeDocumentMoniker": "DSD.Inbound\\Runners\\InboundAppRunner.cs",
+              "ToolTip": "C:\\CIS\\Programs\\DSD\\DSD.Inbound\\Runners\\InboundAppRunner.cs",
+              "RelativeToolTip": "DSD.Inbound\\Runners\\InboundAppRunner.cs",
+              "ViewState": "AgIAADMAAAAAAAAAAAA5wCgAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T19:48:27.535Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\CIS\\Programs\\DSD\\DSD.Inbound\\Program.cs",
+              "RelativeDocumentMoniker": "DSD.Inbound\\Program.cs",
+              "ToolTip": "C:\\CIS\\Programs\\DSD\\DSD.Inbound\\Program.cs",
+              "RelativeToolTip": "DSD.Inbound\\Program.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAgwD8AAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-13T19:45:22.818Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
