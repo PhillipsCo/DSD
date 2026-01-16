@@ -1,0 +1,29 @@
+﻿<Window x:Class="DSD.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DSD Launcher" Height="400" Width="400">
+    <Grid>
+        <StackPanel Margin="20">
+            <TextBlock Text="Run Console Apps" FontSize="18" Margin="0,0,0,20"/>
+
+            <!-- Customer TextBox -->
+            <TextBlock Text="Customer:" FontSize="14"/>
+            <TextBox Name="CustomerInput" Width="200" Margin="0,5,0,10" Text="DEMO"/>
+
+            <!-- Group TextBox -->
+            <TextBlock Text="Group:" FontSize="14"/>
+            <TextBox Name="GroupInput" Width="200" Margin="0,5,0,10" Text="ALL"/>
+
+            <!-- Send to CIS TextBox -->
+            <TextBlock Text="Send to CIS:" FontSize="14"/>
+            <TextBox Name="CISInput" Width="200" Margin="0,5,0,20" Text="N"/>
+
+            <!-- Buttons -->
+            <Button Content="Run DSD.Inbound" Width="200" Margin="0,0,0,10" Click="RunInbound_Click"/>
+            <Button Content="Run DSD.Outbound" Width="200" Click="RunOutbound_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
+
+
+

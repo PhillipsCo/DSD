@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DSD.Common\DSD.Common.csproj" />
+    <ProjectReference Include="..\DSD.Inbound\DSD.Inbound.csproj" />
+    <ProjectReference Include="..\DSD.Outbound\DSD.Outbound.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -176,6 +176,7 @@ namespace DSD.Common.Services
                     using (var fs = new FileStream(localFilePath, FileMode.Create))
                     {
                         client.DownloadFile(remoteFilePath, fs);
+                        client.DeleteFile(remoteFilePath);
                     }
                     Log.Debug("Downloaded {RemoteFile} to {LocalFile} on attempt {Attempt}.", remoteFilePath, localFilePath, attempt + 1);
                     return;

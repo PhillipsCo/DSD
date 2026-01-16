@@ -26,7 +26,12 @@ namespace DSD.Common.Services
                 string destPath = Path.Combine(destinationFolder, fileName);
 
                 // Move the file
-                File.Move(filePath, destPath);
+
+                if (File.Exists(destPath))
+                    File.Replace(filePath, destPath, null); // Atomic overwrite
+                else
+                    File.Move(filePath, destPath); // Move if destination doesn't exist
+
                 Log.Information($"Moved: {fileName}");
             }
 

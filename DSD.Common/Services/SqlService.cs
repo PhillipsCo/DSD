@@ -260,84 +260,91 @@ namespace DSD.Common.Services
             return accessInfo;
         }
 
+
+
         public void InsertCSV(string db, string filePath)
         {
             using (SqlConnection conn = new SqlConnection(CustomerConnectionString(db)))
             {
-
-                //TruncateCISOUT();
-                conn.Open();
+                conn.Open(); // ✅ Open once and keep it open
                 Log.Information($"Connected to SQL Database {conn.Database}");
 
                 string[] fileEntries = Directory.GetFiles(filePath);
-                int firstFile = 1;
-                String preFile = "XXX";
+
                 foreach (string fileEntry in fileEntries)
                 {
-                    String csvFileName = Path.GetFileName(fileEntry);
-                    String fileName = Path.GetFileName(fileEntry).Replace(".CSV", "");
+                    string csvFileName = Path.GetFileName(fileEntry);
+                    string fileName = Path.GetFileNameWithoutExtension(fileEntry);
+
+                    // Normalize file name prefix (before "_")
                     if (fileName.Contains("_"))
                         fileName = fileName.Substring(0, fileName.IndexOf("_"));
-                    if (preFile == fileName)
-                        firstFile++;
-                    else
-                        firstFile = 1;
-                    preFile = fileName;
-                    string SQLtable = "CISOUT_" + fileName;
-                    var linecount = File.ReadAllLines(fileEntry);
-                    int recordCount = linecount.Length;
-                    Console.WriteLine($"Total records: {recordCount}");
-                    StreamReader sr = new StreamReader(fileEntry);
-                    string SQL = string.Empty;
-                    int lines = 0;
-                    Int32 existingRecords = 0;
-                    SqlCommand comm1 = new SqlCommand($"SELECT COUNT(*) FROM {SQLtable} WHERE csvFile = '{csvFileName}'", conn);
-                    existingRecords = (Int32)comm1.ExecuteScalar();
-                    while (!sr.EndOfStream)
+
+                    string sqlTable = "CISOUT_" + fileName;
+
+                    // ✅ Check if records from this file already exist
+                    using (SqlCommand checkCmd = new SqlCommand($"SELECT COUNT(*) FROM {sqlTable} WHERE csvFile = @csvFile", conn))
                     {
+                        checkCmd.Parameters.AddWithValue("@csvFile", csvFileName);
+                        int existingRecords = (int)checkCmd.ExecuteScalar();
 
-                        if (existingRecords == 0)
+                        if (existingRecords > 0)
                         {
-                            if (lines == 0)
-                                SQL = createSQL(SQLtable);
-                            lines++;
-                            if (!SQL.EndsWith("values"))
-                                SQL += ",";
-                            String cleandata = sr.ReadLine().Replace("'", "");
-                            SQL += $"(getdate() AT TIME ZONE 'UTC' AT TIME ZONE 'Pacific Standard Time','{csvFileName}','{cleandata.Replace("|", "','")}')";
-                            if (lines > 500)
+                            Log.Information($"{existingRecords} records exist from {csvFileName} in {sqlTable}. No new records added.");
+                            continue; // Skip to next file
+                        }
+                    }
+
+                    // ✅ Efficient record count
+                    int recordCount = File.ReadLines(fileEntry).Count();
+                    Console.WriteLine($"Total records: {recordCount}");
+
+                    using (StreamReader sr = new StreamReader(fileEntry))
+                    {
+                        string sql = createSQL(sqlTable);
+                        int batchCount = 0;
+
+                        while (!sr.EndOfStream)
+                        {
+                            string cleanData = sr.ReadLine().Replace("'", "");
+                            if (!sql.EndsWith("values"))
+                                sql += ",";
+
+                            sql += $"(GETDATE() AT TIME ZONE 'UTC' AT TIME ZONE 'Pacific Standard Time','{csvFileName}','{cleanData.Replace("|", "','")}')";
+                            batchCount++;
+
+                            // ✅ Execute batch every 500 rows
+                            if (batchCount >= 500)
                             {
-
-                                executeSQL(SQL, conn);
-                                lines = 0;
-
+                                executeSQL(sql, conn);
+                                sql = createSQL(sqlTable); // Reset for next batch
+                                batchCount = 0;
                             }
                         }
-                        else
+
+                        // ✅ Execute remaining rows if any
+                        if (batchCount > 0)
                         {
-                            break;
+                            executeSQL(sql, conn);
                         }
                     }
-                    if (existingRecords == 0)
+
+                    // ✅ Verify inserted count
+                    using (SqlCommand verifyCmd = new SqlCommand($"SELECT COUNT(*) FROM {sqlTable} WHERE csvFile = @csvFile", conn))
                     {
-                        executeSQL(SQL, conn);
-                        SqlCommand comm = new SqlCommand($"SELECT COUNT(*) FROM {SQLtable} WHERE csvFile = '{csvFileName}'", conn);
-                        Int32 count = (Int32)comm.ExecuteScalar();
+                        verifyCmd.Parameters.AddWithValue("@csvFile", csvFileName);
+                        int insertedCount = (int)verifyCmd.ExecuteScalar();
 
-                        Log.Information($"Successfully added {count.ToString()} records to the {SQLtable} from {csvFileName} containing {recordCount} entries");
-
-                    }
-                    else
-                    {
-
-                        Log.Information($"{existingRecords.ToString()} records exist from {csvFileName} in {SQLtable} already 0 more records added");
-
-                    }
+                        Log.Information($"Successfully added {insertedCount} records to {sqlTable} from {csvFileName} containing {recordCount} entries.");
                     }
                 }
             }
-        
-            string CustomerConnectionString(string catalog)
+        }
+
+
+
+
+        string CustomerConnectionString(string catalog)
             {
                 string connectionString = _config.GetConnectionString("CustomerConnectionDB")
                                                  .Replace("CustomerConnection", catalog);
@@ -345,12 +352,12 @@ namespace DSD.Common.Services
             }
             void executeSQL(String SQL, SqlConnection conn)
             {
-                using (conn)
-                {
+                //using (conn)
+                //{
                     try
                     {
                         SqlCommand cmd = new SqlCommand(SQL, conn);
-                        conn.Open();
+                        //conn.Open();
                         cmd.ExecuteNonQuery();
                     }
                     catch (Exception ex)
@@ -360,7 +367,7 @@ namespace DSD.Common.Services
 
                     }
 
-                }
+                //}
             }
             String createSQL(String tableName)
             {

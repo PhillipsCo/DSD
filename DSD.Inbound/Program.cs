@@ -54,7 +54,7 @@ public class Program
 
                     // Register custom services
                     //services.AddTransient<ApiService>();
-                    //services.AddTransient<EmailService>();
+                    services.AddTransient<EmailService>();
                     services.AddTransient<FtpService>();
                     services.AddTransient<SqlService>();
                     services.AddTransient<ApiExecutorService>();
