@@ -1,6 +1,6 @@
 ﻿
 using DSD.Common.Services;
-using DSD.Inbound.Runners;
+using DSD.Scheduler.Runners;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,9 +11,8 @@ using System.IO;
 
 public class Program
 {
-    public static async Task Main(string[] args)
-    {
-        var customerCode = args.Length > 0 ? args[0] : "DEMO";
+    public static async Task Main()
+    { 
 
         // Load configuration
         var configuration = new ConfigurationBuilder()
@@ -21,13 +20,13 @@ public class Program
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
-        // Sanitize customer code for filename
-        var safeCustomerCode = string.Concat(customerCode.Split(Path.GetInvalidFileNameChars()));
+        //// Sanitize customer code for filename
+        //var safeCustomerCode = string.Concat(customerCode.Split(Path.GetInvalidFileNameChars()));
 
         // Build dynamic log file path
         var logPath = configuration["logPath"] ?? "C:\\Logs\\";
         Directory.CreateDirectory(logPath);
-        var dynamicLogFile = Path.Combine(logPath, $"inbound-{safeCustomerCode}-log-.txt");
+        var dynamicLogFile = Path.Combine(logPath, $"Scheduler-log-.txt");
 
         // Override Serilog file path dynamically
         configuration["Serilog:WriteTo:1:Args:path"] = dynamicLogFile;
@@ -39,9 +38,9 @@ public class Program
 
         try
         {
-            Log.Information("Application starting for customer {CustomerCode}", customerCode);
+            Log.Information("Application starting...");
 
-            var host = Host.CreateDefaultBuilder(args)
+            var host = Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -49,27 +48,23 @@ public class Program
                 .UseSerilog()
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddHttpClient("ApiClient");
+                     
                     services.AddSingleton<IConfiguration>(configuration);
-
-                    // Register custom services
-                    //services.AddTransient<ApiService>();
-                    services.AddTransient<EmailService>();
-                    services.AddTransient<FtpService>();
+                     
+                     
                     services.AddTransient<SqlService>();
-                    services.AddTransient<ApiExecutorService>();
-                    services.AddTransient<CsvHelperService>();
-                    services.AddTransient<InboundAppRunner>();
+                    services.AddTransient<SchedulerAppRunner>();
+
                 })
                 .Build();
 
 
             using var scope = host.Services.CreateScope();
-            var appRunner = scope.ServiceProvider.GetRequiredService<InboundAppRunner>();
-            await appRunner.RunAsync(args);
+            var appRunner = scope.ServiceProvider.GetRequiredService<SchedulerAppRunner>();
+            await appRunner.RunAsync();
 
 
-            Log.Information("DSD Outbound application completed successfully.");
+            Log.Information("Jobs Scheduled for the next 3 days.");
         }
         catch (Exception ex)
         {
@@ -81,4 +76,5 @@ public class Program
         }
     }
 }
+
 

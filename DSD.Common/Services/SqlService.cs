@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Polly;
 using Serilog;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace DSD.Common.Services
 {
@@ -377,7 +378,80 @@ namespace DSD.Common.Services
 
             }
 
+            public async Task ScheduleJobsAsync(  int dayOfWeekInt, string dateValue)
+            {
+                try
+                {
+                    Log.Information("Starting job scheduling for   DayOfWeek: {DayOfWeek}, DateValue: {DateValue}",
+                          dayOfWeekInt, dateValue);
+
+                    using (var connection = new SqlConnection(_config.GetConnectionString("CustomerConnectionDB")))
+                    {
+                        await connection.OpenAsync();
+                        Log.Information("SQL connection established successfully.");
+
+                        string query = @"Insert into DSD_Job_Log 
+                        (jobid,Createdate,ScheduleDate,jobname,TargetComputer) 
+                        SELECT jobid
+                        ,FORMAT(SYSDATETIMEOFFSET() AT TIME ZONE 'UTC' AT TIME ZONE 
+                        'Pacific Standard Time','yyyy-MM-dd hh:mm:ss')as CreateDate
+                        ,DATEADD(SECOND, DATEDIFF(SECOND, 0, e.ScheduledTime)
+                        ,FORMAT( CAST(@DateValue as DATETIME) AT TIME ZONE 'UTC' AT TIME ZONE 
+                        'Pacific Standard Time','yyyy-MM-dd') )as ScheduledDate
+                        ,Job as jobname
+                        ,JobEngine 
+                        from DSD_Job_Executables AS e 
+                        WHERE SUBSTRING([ExecuteWeekDays], @DayOfWeekInt , 1) = 'Y' 
+                        AND [JobEngine] = '1' 
+                        AND NOT EXISTS (SELECT 1 FROM DSD_Job_Log AS l 
+                        WHERE l.jobid = e.jobid 
+                        AND l.ScheduleDate = DATEADD(SECOND, DATEDIFF(SECOND, 0,e.ScheduledTime)
+                        , FORMAT(CAST(@DateValue as DATETIME) AT TIME ZONE 'UTC' 
+                        AT TIME ZONE 'Pacific Standard Time','yyyy-MM-dd')) 
+                        AND l.jobname = e.Job 
+                        AND l.TargetComputer = e.JobEngine)";
+
+
+                        using (var command = new SqlCommand(query, connection))
+                        {
+                             
+                            command.Parameters.AddWithValue("@DayOfWeekInt", dayOfWeekInt);
+                            command.Parameters.AddWithValue("@DateValue", dateValue);
+                          
+
+                            int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                            if (rowsAffected > 0)
+                            {
+                                Log.Information("Job successfully scheduled {rowsAffected} jobs for {dateValue}.", dateValue , rowsAffected);
+                            }
+                            else
+                            {
+                                Log.Warning("No rows were inserted for {dateValue}.", dateValue);
+                            }
+                        }
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    Log.Error(ex, "SQL error occurred while scheduling jobs.");
+                    throw; // Optionally rethrow or handle gracefully
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Log.Error(ex, "Database connection error occurred.");
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "An unexpected error occurred while inserting scheduling data.");
+                    throw;
+                }
+            }
         }
-    } 
+    }
+
+
+
 
 

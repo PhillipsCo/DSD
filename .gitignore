@@ -1,0 +1,62 @@
+
+# Visual Studio cache and settings
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+out/
+Debug/
+Release/
+
+# NuGet packages
+*.nupkg
+packages/
+*.snupkg
+
+# Logs and temporary files
+*.log
+*.tlog
+*.cache
+*.tmp
+
+# IDE-specific files
+*.dbmdl
+*.jfm
+*.pdb
+
+# Publish output
+publish/
+dist/
+
+# Rider / JetBrains
+.idea/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# DotCover
+*.dotCover
+
+# Azure Functions local settings
+local.settings.json
+
+# Entity Framework migrations
+Migrations/
+
+# Coverage reports
+coverage/
+*.coverage
+*.coveragexml
+
+# Generated files
+Generated Files/
+
+# Other common ignores
+*.bak
+*.swp
+*.swo

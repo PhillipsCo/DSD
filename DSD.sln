@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSD.UI", "DSD.UI\DSD.UI.csproj", "{95A3085F-1974-4B88-A4EA-AB6CD49F94AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSD.Scheduler", "DSD.Scheduler\DSD.Scheduler.csproj", "{6B60AEBE-BE8A-4159-BE54-D96C5B4885AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{95A3085F-1974-4B88-A4EA-AB6CD49F94AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95A3085F-1974-4B88-A4EA-AB6CD49F94AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95A3085F-1974-4B88-A4EA-AB6CD49F94AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B60AEBE-BE8A-4159-BE54-D96C5B4885AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B60AEBE-BE8A-4159-BE54-D96C5B4885AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B60AEBE-BE8A-4159-BE54-D96C5B4885AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B60AEBE-BE8A-4159-BE54-D96C5B4885AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
