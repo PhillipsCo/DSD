@@ -96,18 +96,21 @@ namespace DSD.Common.Services
         /// </summary>
         public void ProcessUploadFiles(string ftpHost, string ftpUser, string ftpPass, string ftpRemoteFilePath, string ftpLocalFilePath)
         {
+            string masterDataPath = $"{ftpRemoteFilePath.TrimEnd('/')}/Inbound/MasterData/";
+            string orderDataPath = $"{ftpRemoteFilePath.TrimEnd('/')}/Inbound/Orders/";
             using (var client = Connect(ftpHost, ftpUser, ftpPass))
             {
                 try
                 {
                     // STEP 1: Wait for ReadyERP file
                     Log.Information("Waiting for ReadyERP file before upload...");
-                    WaitForFilePresence(client, ftpRemoteFilePath + "ReadyERP", 600);
-
+                    WaitForFilePresence(client, masterDataPath + "ReadyERP", 600);
+                    DeleteIfExists(client, masterDataPath + "ReadyERP");
+                    DeleteIfExists(client, orderDataPath + "ReadyERP");
                     // STEP 2: Upload WaitCIS
                     Log.Information("Uploading WaitCIS handshake file...");
-                    UploadWithRetry(client, "c:/CIS/WaitCIS", ftpRemoteFilePath + "WaitCIS");
-
+                    UploadWithRetry(client, "c:/CIS/WaitCIS", masterDataPath + "WaitCIS");
+                    UploadWithRetry(client, "c:/CIS/WaitCIS", orderDataPath + "WaitCIS");
                     // STEP 3: Upload CSV files
                     Log.Information("Uploading files...");
                     var files = Directory.EnumerateFiles(ftpLocalFilePath + "\\Outbound\\" + DateTime.Now.ToString("yyyyMMdd")).Where(f => f.EndsWith(".csv"));
@@ -124,9 +127,10 @@ namespace DSD.Common.Services
 
                     // STEP 4: Remove WaitCIS and upload ReadyCIS
                     Log.Information("Finalizing upload: removing WaitCIS and uploading ReadyCIS...");
-                    DeleteIfExists(client, ftpRemoteFilePath + "WaitCIS");
-                    UploadWithRetry(client, "c:/CIS/ReadyCIS", ftpRemoteFilePath + "ReadyCIS");
-
+                    DeleteIfExists(client, masterDataPath + "WaitCIS");
+                    DeleteIfExists(client, orderDataPath + "WaitCIS");
+                    UploadWithRetry(client, "c:/CIS/ReadyCIS", masterDataPath + "ReadyCIS");
+                    UploadWithRetry(client, "c:/CIS/ReadyCIS", orderDataPath + "ReadyCIS");
                     Log.Information("Upload process completed successfully.");
                 }
                 catch (Exception ex)
