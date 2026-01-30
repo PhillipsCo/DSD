@@ -186,7 +186,7 @@ namespace DSD.Common.Services
                 var response = await retryPolicy.ExecuteAsync(async () =>
                 {
                     using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                    cts.CancelAfter(TimeSpan.FromSeconds(60));
+                    cts.CancelAfter(TimeSpan.FromSeconds(300));
 
                     var resp = await client.GetAsync(url, cts.Token);
 
@@ -205,7 +205,8 @@ namespace DSD.Common.Services
                 json = Regex.Replace(json, @"\](?=.*\}\]\})", " ");
                 json = json.Replace("P[LAIN CITY", "PLAIN CITY");
                 json = json.Split('[', ']')[1];
-                json = json.Replace("'", "''").Replace("_x0020_", "");
+                //json = json.Replace("'", "''").Replace("_x0020_", "");
+                json = json.Replace("_x0020_", "");
                 json = "[" + json + "]";
                 if (response.StatusCode == HttpStatusCode.OK && json != "[]")
                 {

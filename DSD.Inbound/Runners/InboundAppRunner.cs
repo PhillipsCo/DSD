@@ -3,9 +3,6 @@ using DSD.Common.Models;
 using DSD.Common.Services;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace DSD.Inbound.Runners
 {
@@ -115,13 +112,22 @@ namespace DSD.Inbound.Runners
                     var localPath = accessInfo.ftpLocalFilePath + "Inbound\\";
                     foreach (var remotePath in remotePaths)
                     {
-                        _ftpService.ProcessDownloadFiles(accessInfo.ftpHost,
+                        var ftpResult = _ftpService.ProcessDownloadFiles(accessInfo.ftpHost,
                                                          accessInfo.ftpUser,
                                                          accessInfo.ftpPass,
                                                          remotePath,
                                                          localPath);
+                        if (!ftpResult)
+                        {
+                            processFailed = true; // ✅ Mark failure for email
+                            Log.Error("FTP download failed due to handshake timeout or other error.");
+                        }
+                        else
+                        {
+                            Log.Information("FTP download completed successfully.");
+                        }
                     }
-                    Log.Information("FTP Download completed.");
+                    Log.Information("FTP download completed.");
                 }
 
                 // STEP 7: Process CSV files if FTP upload is not skipped

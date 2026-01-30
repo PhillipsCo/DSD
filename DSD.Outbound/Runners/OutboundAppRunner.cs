@@ -122,9 +122,30 @@ namespace DSD.Outbound.Runners
                 // STEP 7: FTP Upload
                 if (!skipFtpUpload && !string.Equals(sendCIS, "N", StringComparison.OrdinalIgnoreCase))
                 {
-                    _ftpService.ProcessUploadFiles(accessInfo.ftpHost, accessInfo.ftpUser, accessInfo.ftpPass, accessInfo.ftpRemoteFilePath, accessInfo.ftpLocalFilePath);
-                    Log.Information("FTP upload completed.");
+                    try
+                    {
+                        var ftpResult = _ftpService.ProcessUploadFiles(accessInfo.ftpHost, accessInfo.ftpUser, accessInfo.ftpPass, accessInfo.ftpRemoteFilePath, accessInfo.ftpLocalFilePath);
+                        //Log.Information("FTP upload completed.");
+
+                        if (!ftpResult)
+                        {
+                            processFailed = true; // ✅ Mark failure for email
+                            Log.Error("FTP upload failed due to handshake timeout or other error.");
+                        }
+                        else
+                        {
+                            Log.Information("FTP upload completed successfully.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        processFailed = true; // ✅ Mark failure on exception
+                        Log.Error(ex, "Error during FTP upload.");
+                    }
                 }
+
+            
+                
             }
             catch (Exception ex)
             {

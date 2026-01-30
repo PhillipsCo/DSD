@@ -47,7 +47,7 @@ namespace DSD.Common.Services
         /// 3. Download all CSV files from remote directory.
         /// 4. Remove WaitCIS and upload ReadyCIS to signal completion.
         /// </summary>
-        public void ProcessDownloadFiles(string ftpHost, string ftpUser, string ftpPass, string ftpRemoteFilePath, string ftpLocalFilePath)
+        public bool ProcessDownloadFiles(string ftpHost, string ftpUser, string ftpPass, string ftpRemoteFilePath, string ftpLocalFilePath)
         {
             using (var client = Connect(ftpHost, ftpUser, ftpPass))
             {
@@ -55,8 +55,12 @@ namespace DSD.Common.Services
                 {
                     // STEP 1: Wait for ReadyERP file
                     Log.Information("Waiting for ReadyERP file...");
-                    WaitForFilePresence(client, ftpRemoteFilePath + "ReadyERP", 600);
-
+                    bool readyFileFound = WaitForFilePresence(client, ftpRemoteFilePath + "ReadyERP", 600);
+                    if (!readyFileFound)
+                    {
+                        Log.Error("Timeout: ReadyERP file not found within 600 seconds.");
+                        return false; // ✅ Signal failure
+                    }
                     // STEP 2: Upload WaitCIS
                     Log.Information("Uploading WaitCIS handshake file...");
                     UploadWithRetry(client, "c:/CIS/WaitCIS", ftpRemoteFilePath + "WaitCIS");
@@ -76,13 +80,15 @@ namespace DSD.Common.Services
                     // STEP 4: Remove WaitCIS and upload ReadyCIS
                     Log.Information("Finalizing process: removing WaitCIS and uploading ReadyCIS...");
                     DeleteIfExists(client, ftpRemoteFilePath + "WaitCIS");
-                    UploadWithRetry(client, "c:/CIS/ReadyCIS", ftpRemoteFilePath + "ReadyCIS");
+                    //UploadWithRetry(client, "c:/CIS/ReadyCIS", ftpRemoteFilePath + "ReadyCIS");
 
                     Log.Information("Download process completed successfully.");
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     Log.Error(ex, "Error occurred during FTP download process.");
+                    return false;
                 }
             }
         }
@@ -94,7 +100,7 @@ namespace DSD.Common.Services
         /// 3. Upload all CSV files from local directory.
         /// 4. Remove WaitCIS and upload ReadyCIS.
         /// </summary>
-        public void ProcessUploadFiles(string ftpHost, string ftpUser, string ftpPass, string ftpRemoteFilePath, string ftpLocalFilePath)
+        public bool ProcessUploadFiles(string ftpHost, string ftpUser, string ftpPass, string ftpRemoteFilePath, string ftpLocalFilePath)
         {
             string masterDataPath = $"{ftpRemoteFilePath.TrimEnd('/')}/Inbound/MasterData/";
             string orderDataPath = $"{ftpRemoteFilePath.TrimEnd('/')}/Inbound/Orders/";
@@ -103,9 +109,16 @@ namespace DSD.Common.Services
                 try
                 {
                     // STEP 1: Wait for ReadyERP file
-                    Log.Information("Waiting for ReadyERP file before upload...");
-                    WaitForFilePresence(client, masterDataPath + "ReadyERP", 600);
-                    DeleteIfExists(client, masterDataPath + "ReadyERP");
+                    Log.Information("Checking for Existance of WaitERP file before upload...");
+                    bool readyFileFound = WaitForFileAbsence(client, masterDataPath + "WaitERP", 600);
+
+                    if (!readyFileFound)
+                    {
+                        Log.Error("Timeout: ReadyERP file not found within 600 seconds.");
+                        return false; // ✅ Signal failure
+                    }
+
+                        DeleteIfExists(client, masterDataPath + "ReadyERP");
                     DeleteIfExists(client, orderDataPath + "ReadyERP");
                     // STEP 2: Upload WaitCIS
                     Log.Information("Uploading WaitCIS handshake file...");
@@ -123,6 +136,7 @@ namespace DSD.Common.Services
                         var remoteFile = ftpPath + Path.GetFileName(file);
                         UploadWithRetry(client, file, remoteFile);
                         Log.Information("{FileName} uploaded successfully.", Path.GetFileName(file));
+                       
                     }
 
                     // STEP 4: Remove WaitCIS and upload ReadyCIS
@@ -132,10 +146,12 @@ namespace DSD.Common.Services
                     UploadWithRetry(client, "c:/CIS/ReadyCIS", masterDataPath + "ReadyCIS");
                     UploadWithRetry(client, "c:/CIS/ReadyCIS", orderDataPath + "ReadyCIS");
                     Log.Information("Upload process completed successfully.");
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     Log.Error(ex, "Error occurred during FTP upload process.");
+                    return false;
                 }
             }
         }
@@ -198,18 +214,30 @@ namespace DSD.Common.Services
         /// <summary>
         /// Waits for a file to appear on the remote server (used for ReadyERP).
         /// </summary>
-        private void WaitForFilePresence(SftpClient client, string remoteFilePath, int timeoutSeconds)
+        private bool WaitForFilePresence(SftpClient client, string remoteFilePath, int timeoutSeconds)
         {
             Stopwatch sw = Stopwatch.StartNew();
             while (sw.Elapsed.TotalSeconds < timeoutSeconds)
             {
-                if (client.Exists(remoteFilePath)) return; // File found
+                if (client.Exists(remoteFilePath)) return true; // File found
                 Thread.Sleep(2000); // Check every 2 seconds
             }
             Log.Warning("Timeout waiting for {File} to appear.", remoteFilePath);
-            throw new TimeoutException($"File {remoteFilePath} did not appear within {timeoutSeconds} seconds.");
+            return false;// ✅ Indicate failure instead of throwing
+            //throw new TimeoutException($"File {remoteFilePath} did not appear within {timeoutSeconds} seconds.");
         }
-
+        private bool WaitForFileAbsence(SftpClient client, string remoteFilePath, int timeoutSeconds)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            while (sw.Elapsed.TotalSeconds < timeoutSeconds)
+            {
+                if (!client.Exists(remoteFilePath)) return true; // File found
+                Thread.Sleep(2000); // Check every 2 seconds
+            }
+            Log.Warning("Timeout waiting for {File} to disappear.", remoteFilePath);
+            return false;// ✅ Indicate failure instead of throwing
+            //throw new TimeoutException($"File {remoteFilePath} did not appear within {timeoutSeconds} seconds.");
+        }
         /// <summary>
         /// Deletes a file from the remote server if it exists.
         /// </summary>

@@ -44,7 +44,7 @@ namespace DSD.UI {
         /// InitializeComponent
         /// </summary>
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "9.0.9.0")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "9.0.12.0")]
         public void InitializeComponent() {
             
             #line 4 "..\..\..\App.xaml"
@@ -59,7 +59,7 @@ namespace DSD.UI {
         /// </summary>
         [System.STAThreadAttribute()]
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "9.0.9.0")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "9.0.12.0")]
         public static void Main() {
             DSD.UI.App app = new DSD.UI.App();
             app.InitializeComponent();
