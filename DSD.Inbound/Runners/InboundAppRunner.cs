@@ -159,7 +159,7 @@ namespace DSD.Inbound.Runners
                 {
                     var logDirectory = _configuration["logPath"] ?? "C:\\Logs\\";
                     var safeCustomerCode = string.Concat(customerCode.Split(Path.GetInvalidFileNameChars()));
-                    var searchPattern = $"outbound-{safeCustomerCode}-log-*.txt";
+                    var searchPattern = $"Inbound-{safeCustomerCode}-log-*.txt";
                     var logFiles = Directory.GetFiles(logDirectory, searchPattern);
 
                     if (logFiles.Length > 0)
