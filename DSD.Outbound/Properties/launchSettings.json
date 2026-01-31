@@ -2,7 +2,7 @@
   "profiles": {
     "DSD.Outbound": {
       "commandName": "Project",
-      "commandLineArgs": "MOR HFSCUSTOMERCARD N"
+      "commandLineArgs": "MOR ALL N"
     }
   }
 }
