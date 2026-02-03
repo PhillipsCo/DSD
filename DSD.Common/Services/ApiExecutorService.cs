@@ -48,10 +48,18 @@ namespace DSD.Common.Services
         // ------------------------------------------------------------
         // Constructor
         // ------------------------------------------------------------
+
+        private readonly int _globalTimeoutMinutes;
+        private readonly int _maxIterations;
+
         public ApiExecutorService(IHttpClientFactory httpClientFactory, IConfiguration config)
         {
             _httpClientFactory = httpClientFactory;
             _config = config;
+
+            _globalTimeoutMinutes = _config.GetValue<int>("ApiExecutorConfig:GlobalTimeoutMinutes", 30);
+            _maxIterations = _config.GetValue<int>("ApiExecutorConfig:MaxIterations", 100);
+
         }
 
         // ------------------------------------------------------------
@@ -72,7 +80,7 @@ namespace DSD.Common.Services
             var client = _httpClientFactory.CreateClient("ApiClient");
 
             // Global boundary for the whole run (prevents runaway jobs)
-            using var globalCts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+            using var globalCts = new CancellationTokenSource(TimeSpan.FromMinutes(_globalTimeoutMinutes));
             var globalToken = globalCts.Token;
 
             // Ensure we start with a valid access token
@@ -187,7 +195,7 @@ namespace DSD.Common.Services
             {
                 // Short, per-request timeout for token calls
                 using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                cts.CancelAfter(TimeSpan.FromSeconds(30));
+                cts.CancelAfter(TimeSpan.FromSeconds(900));
 
                 // Explicit request so we can force HTTP/1.1 and stream headers early
                 using var req = new HttpRequestMessage(HttpMethod.Post, accessInfo.Url)
@@ -251,7 +259,7 @@ namespace DSD.Common.Services
             int batchSize = (int)apiInfo.batchSize;
             bool hasData = true;
             int iteration = 0;
-            int maxIterations = 100; // Safety guard to avoid infinite loops if pagination breaks
+            int maxIterations = _maxIterations; // Safety guard to avoid infinite loops if pagination breaks
 
             // Retry policy for data calls, same rationale as token policy
             var retryPolicy = Policy

@@ -2,7 +2,7 @@
   "profiles": {
     "DSD.Outbound": {
       "commandName": "Project",
-      "commandLineArgs": "MOR ALL N"
+      "commandLineArgs": "DEMO ALL N"
     }
   }
 }
