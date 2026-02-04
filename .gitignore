@@ -60,3 +60,4 @@ Generated Files/
 *.bak
 *.swp
 *.swo
+/DSD.Common/bin/Release/net8.0/DSD.Common.dll
