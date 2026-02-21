@@ -5,6 +5,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- ✅ Option 1: Fail the build if appsettings*.json is not valid JSON -->
+    <ValidateAppSettingsJson>true</ValidateAppSettingsJson>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,5 +24,29 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <!-- ✅ Option 1 added here -->
+  <Target Name="ValidateAppSettingsJson"
+          BeforeTargets="Build"
+          Condition="'$(ValidateAppSettingsJson)' == 'true'">
+
+    <!-- Validate appsettings.json plus any environment-specific variants -->
+    <ItemGroup>
+      <JsonToValidate Include="$(ProjectDir)appsettings.json" />
+      <JsonToValidate Include="$(ProjectDir)appsettings.*.json" />
+    </ItemGroup>
+
+    <!-- Remove entries that don't exist (so missing env files don't fail the build) -->
+    <ItemGroup>
+      <JsonToValidate Remove="@(JsonToValidate)"
+                      Condition="!Exists('%(JsonToValidate.Identity)')" />
+    </ItemGroup>
+
+    <Message Importance="high"
+             Text="Validating JSON files: @(JsonToValidate)" />
+
+    <!-- ✅ Use PowerShell 7 so Test-Json exists -->
+    <Exec Command="&quot;C:\Program Files\PowerShell\7\pwsh.exe&quot; -NoLogo -NoProfile -Command &quot;$ErrorActionPreference='Stop'; foreach ($f in @('@(JsonToValidate)')) { try { Get-Content -Raw -LiteralPath $f | Test-Json -ErrorAction Stop | Out-Null; Write-Host ('OK: ' + $f) } catch { Write-Error ('JSON validation failed for ' + $f + ': ' + $_.Exception.Message); exit 1 } }&quot;" />
+  </Target>
 
 </Project>

@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Polly;
 using Serilog;
+using System.Data;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace DSD.Common.Services
@@ -59,12 +60,20 @@ namespace DSD.Common.Services
                     return;
                 }
             }
+            try
+            {
+                var deleteSql = $"DELETE FROM [dbo].[{tableName}]";
+                await using var deleteCmd = new SqlCommand(deleteSql, conn);
 
-            var deleteSql = $"DELETE FROM [{tableName}]";
-            await using var deleteCmd = new SqlCommand(deleteSql, conn);
-            var rowsAffected = await deleteCmd.ExecuteNonQueryAsync();
-            Log.Information("Deleted {RowsAffected} rows from table {TableName}", rowsAffected, tableName);
+                var rowsAffected = await deleteCmd.ExecuteNonQueryAsync();
+                Log.Information("Deleted {RowsAffected} rows from table {TableName}", rowsAffected, tableName);
+            }
+            catch (Exception ex)
+            {
+                Log.Information(ex.Message);
+            
         }
+            }
 
         public async Task DeleteTablesWithPrefixAsync(string databaseName, string prefix, string dir, string group)
         {
@@ -261,8 +270,6 @@ namespace DSD.Common.Services
             return accessInfo;
         }
 
-
-
         public void InsertCSV(string db, string filePath)
         {
             using (SqlConnection conn = new SqlConnection(CustomerConnectionString(db)))
@@ -342,6 +349,55 @@ namespace DSD.Common.Services
             }
         }
 
+        public async Task MergePerm(string db)
+        {
+            using (SqlConnection conn = new SqlConnection(CustomerConnectionString(db)))
+            {
+                conn.Open(); // ✅ Open once and keep it open
+                Log.Information($"Connected to SQL Database {conn.Database}");
+
+                string mergeSql = @"MERGE dbo.DSD_PERM AS tgt
+                                USING dbo.CISOUT_INVEDYNA AS src
+                                    ON  tgt.CustomerNumber = src.Customer
+                                    AND tgt.ItemNumber     = src.product
+                                    AND tgt.DayofWeek      = src.Day_deliv
+
+                                WHEN MATCHED
+                                     AND tgt.Quantity <> src.Quantity
+                                    THEN UPDATE
+                                         SET tgt.Quantity = src.Quantity
+
+                                WHEN NOT MATCHED BY TARGET
+                                    THEN INSERT (CustomerNumber, ItemNumber, DayofWeek, Quantity)
+                                         VALUES (src.Customer, src.product, src.Day_deliv, src.Quantity);";
+
+                //await using var mergeCmd = new SqlCommand(mergeSql, conn);
+                //var rowsAffected = await mergeCmd.ExecuteNonQueryAsync();
+                //Log.Information("Merged {RowsAffected} rows from table DSD_Perm", rowsAffected);
+                using var tx = conn.BeginTransaction();
+                try
+                {
+                    using var cmd = new SqlCommand(mergeSql, conn, tx)
+                    {
+                        CommandType = CommandType.Text,
+                        CommandTimeout = 0 // optional if large volume
+                    };
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    tx.Commit();
+                    Log.Information("Merged {RowsAffected} rows from table DSD_Perm", rowsAffected);
+                }
+                catch(Exception ex)
+                {
+                    Log.Information(ex.Message);
+                    tx.Rollback();
+                    throw;
+                }
+
+
+            }
+        }
+
 
 
 
@@ -390,26 +446,8 @@ namespace DSD.Common.Services
                         await connection.OpenAsync();
                         Log.Information("SQL connection established successfully.");
 
-                        string query = @"Insert into DSD_Job_Log 
-                        (jobid,Createdate,ScheduleDate,jobname,TargetComputer) 
-                        SELECT jobid
-                        ,FORMAT(SYSDATETIMEOFFSET() AT TIME ZONE 'UTC' AT TIME ZONE 
-                        'Pacific Standard Time','yyyy-MM-dd hh:mm:ss')as CreateDate
-                        ,DATEADD(SECOND, DATEDIFF(SECOND, 0, e.ScheduledTime)
-                        ,FORMAT( CAST(@DateValue as DATETIME) AT TIME ZONE 'UTC' AT TIME ZONE 
-                        'Pacific Standard Time','yyyy-MM-dd') )as ScheduledDate
-                        ,Job as jobname
-                        ,JobEngine 
-                        from DSD_Job_Executables AS e 
-                        WHERE SUBSTRING([ExecuteWeekDays], @DayOfWeekInt , 1) = 'Y' 
-                        AND [JobEngine] = '1' 
-                        AND NOT EXISTS (SELECT 1 FROM DSD_Job_Log AS l 
-                        WHERE l.jobid = e.jobid 
-                        AND l.ScheduleDate = DATEADD(SECOND, DATEDIFF(SECOND, 0,e.ScheduledTime)
-                        , FORMAT(CAST(@DateValue as DATETIME) AT TIME ZONE 'UTC' 
-                        AT TIME ZONE 'Pacific Standard Time','yyyy-MM-dd')) 
-                        AND l.jobname = e.Job 
-                        AND l.TargetComputer = e.JobEngine)";
+                    string query = _config["SQL"];
+                        
 
 
                         using (var command = new SqlCommand(query, connection))

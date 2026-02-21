@@ -95,11 +95,11 @@ namespace DSD.Inbound.Runners
                 }
 
                 // STEP 5: Execute APIs if not skipped
-                if (!skipApiList)
-                {
-                    await _apiExecutorService.ExecuteApisAndInsertAsync(apiList, accessInfo);
-                    Log.Information("API execution completed for customer {CustomerCode}", customerCode);
-                }
+                //if (!skipApiList)
+                //{
+                //    await _apiExecutorService.ExecuteApisAndInsertAsync(apiList, accessInfo);
+                //    Log.Information("API execution completed for customer {CustomerCode}", customerCode);
+                //}
 
                 // STEP 6: FTP Download if not skipped and CIS flag is set
                 if (!skipFtpUpload && !string.Equals(sendCIS, "N", StringComparison.OrdinalIgnoreCase))
@@ -138,12 +138,18 @@ namespace DSD.Inbound.Runners
 
                     // Insert CSV data into database
                     _sqlService.InsertCSV(accessInfo.InitialCatalog, sourceFolder);
-
+                    //populate DSD_Perm
+                    _sqlService.MergePerm(accessInfo.InitialCatalog);
+                    //Remove Source Data
+                    _sqlService.DeleteSingleTableAsync(accessInfo.InitialCatalog, "CISOUT_INVEDYNA");
                     // Move processed CSV files to archive
                     _csvHelperService.MoveCSVfiles(sourceFolder, destinationFolder);
+                    
 
                     // Purge old CSV files from archive (older than 30 days)
                     _csvHelperService.PurgeOldCsv(destinationFolder, 30);
+                    
+                    
                 }
             }
             catch (Exception ex)
