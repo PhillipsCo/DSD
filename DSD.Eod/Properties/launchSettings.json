@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DSD.Eod": {
+      "commandName": "Project",
+      "commandLineArgs": "DEMO"
+    }
+  }
+}

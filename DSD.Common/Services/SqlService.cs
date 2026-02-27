@@ -36,6 +36,12 @@ namespace DSD.Common.Services
         // Returns:
         //   List<TableApiName> containing API details for execution
 
+        public sealed record SqlExecResult(
+            bool Success,
+            int RowsAffected,
+            string? ErrorMessage = null
+        );
+
 
         public async Task DeleteSingleTableAsync(string databaseName, string tableName)
         {
@@ -269,6 +275,60 @@ namespace DSD.Common.Services
 
             return accessInfo;
         }
+
+
+        public async Task<SqlExecResult> ExecuteDeleteAsync(
+        string catalog,
+        string sql,
+        Dictionary<string, object>? parameters = null,
+        int? commandTimeoutSeconds = null)
+        {
+            try
+            {
+                var connectionString = CustomerConnectionString(catalog);
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    return new SqlExecResult(
+                        Success: false,
+                        RowsAffected: 0,
+                        ErrorMessage: $"Connection string '{connectionString}' was not found.");
+                }
+
+                // If anything came from HTML (like &lt;), normalize it:
+                sql = sql.Replace("&lt;", "<").Replace("&gt;", ">");
+
+                await using var conn = new SqlConnection(connectionString);
+                await conn.OpenAsync();
+
+                await using var cmd = conn.CreateCommand();
+                cmd.CommandText = sql;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandTimeout = commandTimeoutSeconds ?? 30;
+
+                if (parameters is not null)
+                {
+                    foreach (var kvp in parameters)
+                    {
+                        var p = cmd.Parameters.AddWithValue("@" + kvp.Key, kvp.Value ?? DBNull.Value);
+
+                        // Optional: prevent AddWithValue pitfalls for ints
+                         if (kvp.Value is int) p.SqlDbType = SqlDbType.Int;
+                    }
+                }
+
+                var rows = await cmd.ExecuteNonQueryAsync();
+
+                // For DELETE, ExecuteNonQuery returns rows affected (or -1 for some statements)
+                return new SqlExecResult(true, rows);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "ExecuteDeleteAsync failed. database Name={catalog}", catalog);
+                return new SqlExecResult(false, 0, ex.Message);
+            }
+        }
+
+
 
         public void InsertCSV(string db, string filePath)
         {
