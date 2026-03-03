@@ -10,7 +10,7 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace DSD.Common.Services
 {
-    public class SqlService
+    public class SqlService : ISqlService
     {
         // ------------------------------------------------------------
         // Private field for configuration
@@ -42,7 +42,30 @@ namespace DSD.Common.Services
             string? ErrorMessage = null
         );
 
+        public async Task<List<CustomerRow>> GetCustomersAsync()
+        {
+            const string sql = "select id, customer, InitialCatalog  from DSD_CUSTOMERINFO order by customer";
 
+            var list = new List<CustomerRow>();
+            var _connectionString = CustomerConnectionString("CustomerConnection");
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, conn);
+
+            await conn.OpenAsync().ConfigureAwait(false);
+            using var rdr = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+
+            while (await rdr.ReadAsync().ConfigureAwait(false))
+            {
+                list.Add(new CustomerRow
+                {
+                    Id = rdr.GetInt32(0),
+                    Customer = rdr.IsDBNull(1) ? "" : rdr.GetString(1),
+                    InitialCatalog = rdr.IsDBNull(2) ? "" : rdr.GetString(2)
+                });
+            }
+
+            return list;
+        }
         public async Task DeleteSingleTableAsync(string databaseName, string tableName)
         {
             var connectionString = CustomerConnectionString(databaseName);
@@ -459,7 +482,31 @@ namespace DSD.Common.Services
         }
 
 
+        public async Task<List<string>> GetOutboundTableNamesAsync(string catalog)
+        {
+            const string sql = @"
+        SELECT DISTINCT TABLE_NAME
+        FROM dbo.DSD_API_LIST
+        ORDER BY TABLE_NAME;";
 
+            var results = new List<string>();
+
+            // Use the DB where DSD_API_LIST lives
+            var connectionString = CustomerConnectionString(catalog);
+
+            await using var conn = new SqlConnection(connectionString);
+            await conn.OpenAsync();
+
+            await using var cmd = new SqlCommand(sql, conn);
+            await using var rdr = await cmd.ExecuteReaderAsync();
+
+            while (await rdr.ReadAsync())
+            {
+                results.Add(rdr.GetString(0));
+            }
+
+            return results;
+        }
 
         string CustomerConnectionString(string catalog)
             {

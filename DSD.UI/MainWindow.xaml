@@ -4,15 +4,100 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Your App" Height="520" Width="860">
+        
+Title="DSD"
+        Height="450"
+        Width="800"
+        Background="#76829a">
 
-    <Grid Margin="12"/>
+    <Grid Margin="20">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
 
+    <StackPanel Grid.Column="0"
+                Width="320"
+                HorizontalAlignment="Left">
+
+        <!-- Instruction text -->
+        <TextBlock TextWrapping="Wrap"
+                   FontSize="13"
+                   Margin="0,0,0,12">
+            Select a customer from the list below.
+            This determines which customer configuration
+            and APIs will be used when the process runs.
+        </TextBlock>
+            <!-- Direction label -->
+            <TextBlock Text="DIRECTION"
+           FontWeight="Bold"
+           Margin="0,0,0,4"/>
+
+
+            <!-- ✅ BOUND Direction ComboBox -->
+            <ComboBox ItemsSource="{Binding Directions}"
+          SelectedItem="{Binding SelectedDirection, Mode=TwoWay}"
+          Width="300"
+          Margin="0,0,0,12"/>
+
+            <!-- CUSTOMER label -->
+        <TextBlock Text="CUSTOMER"
+                   FontWeight="Bold"
+                   Margin="0,0,0,4"/>
+
+        <!-- Customer ComboBox -->
+        <ComboBox ItemsSource="{Binding Customers}"
+                  DisplayMemberPath="Customer"
+                  SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
+                  Width="300"/>
+            <TextBlock Text="TABLE / GROUP"
+           FontWeight="Bold"
+           Margin="0,12,0,4"/>
+
+            <TextBlock Text="ALL"
+           FontSize="14"
+           FontWeight="SemiBold"
+           Margin="0,0,0,4">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedDirection}" Value="Inbound">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <!-- Outbound: show combo -->
+            <ComboBox ItemsSource="{Binding TableOptions}"
+          SelectedItem="{Binding SelectedTableOption, Mode=TwoWay}"
+          Width="300"
+          Margin="0,4,0,0">
+                <ComboBox.Style>
+                    <Style TargetType="ComboBox">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedDirection}" Value="Outbound">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.Style>
+            </ComboBox>
+
+            <TextBlock Text="SEND TO CIS"
+           FontWeight="Bold"
+           Margin="0,12,0,4"/>
+
+            <CheckBox Content="Yes"
+          IsChecked="{Binding SendToCis, Mode=TwoWay}"
+          FontSize="14"/>
+            <Button Content="Run"
+        Command="{Binding RunCommand}"
+        Width="120"
+        Margin="0,16,0,0"/>
+        </StackPanel>
+</Grid>
 </Window>
-
-
-
-
-
-
-
