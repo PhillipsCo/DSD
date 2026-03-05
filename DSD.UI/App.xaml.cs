@@ -1,13 +1,11 @@
-﻿
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Windows;
 using DSD.Common.Services;
-using DSD.Inbound.Runners;
-using DSD.Outbound.Runners;
-using DSD.UI;
+using DSD.UI.ViewModels;
+
 namespace DSD.UI
 {
     public partial class App : Application
@@ -18,28 +16,17 @@ namespace DSD.UI
         {
             base.OnStartup(e);
 
-            // Load configuration
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            // Configure DI
             var services = new ServiceCollection();
+
             services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton<ISqlService, SqlService>();
 
-            // Register services from Common
-            services.AddTransient<SqlService>();
-            services.AddTransient<ApiExecutorService>();
-            services.AddTransient<CsvHelperService>();
-            services.AddTransient<FtpService>();
-            services.AddTransient<EmailService>();
-
-            // Register runners
-            services.AddTransient<InboundAppRunner>();
-            services.AddTransient<OutboundAppRunner>();
-
-            // Register MainWindow
+            services.AddTransient<MainViewModel>();
             services.AddTransient<MainWindow>();
 
             _serviceProvider = services.BuildServiceProvider();

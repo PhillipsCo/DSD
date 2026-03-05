@@ -4,60 +4,97 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        
-Title="DSD"
-        Height="450"
-        Width="800"
+        Title="DSD"
+        Height="700"
+        Width="1500"
         Background="#76829a">
 
     <Grid Margin="20">
-    <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
 
-    <StackPanel Grid.Column="0"
-                Width="320"
-                HorizontalAlignment="Left">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
+            <!-- Main content -->
+        </Grid.RowDefinitions>
 
-        <!-- Instruction text -->
-        <TextBlock TextWrapping="Wrap"
-                   FontSize="13"
-                   Margin="0,0,0,12">
-            Select a customer from the list below.
-            This determines which customer configuration
-            and APIs will be used when the process runs.
-        </TextBlock>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <!-- HEADER -->
+        <Border Grid.Row="0"
+        Grid.ColumnSpan="2"
+        Padding="12"
+        Margin="0,0,0,16"
+        CornerRadius="6"
+        Background="#95A0B6">
+
+            <StackPanel Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+
+                <TextBlock Text="CUSTOMER \ ENVIRONMENT"
+                   FontWeight="Bold"
+                   FontSize="14"
+                   Margin="0,0,10,0"
+                   VerticalAlignment="Center"/>
+
+                <ComboBox ItemsSource="{Binding Customers}"
+                  DisplayMemberPath="Customer"
+                  SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
+                  Width="320"
+                  FontSize="14"/>
+            </StackPanel>
+        </Border>
+        <!-- LEFT: Existing parameter + Run panel -->
+
+        <StackPanel Grid.Row="1"
+            Grid.Column="0"
+            Width="320"
+            HorizontalAlignment="Left">
+
+
+            <!-- Instruction text -->
+            <TextBlock TextWrapping="Wrap"
+                       FontSize="13"
+                       Margin="0,0,0,12">
+                Choose the customer above that you would like to work 
+                with.  Then choose the APP you would like to run Outbound
+                has 2 options ALL tables or a specific table and send data 
+                to CIS 
+            </TextBlock>
+
             <!-- Direction label -->
             <TextBlock Text="DIRECTION"
-           FontWeight="Bold"
-           Margin="0,0,0,4"/>
-
+                       FontWeight="Bold"
+                       Margin="0,0,0,4"/>
 
             <!-- ✅ BOUND Direction ComboBox -->
             <ComboBox ItemsSource="{Binding Directions}"
-          SelectedItem="{Binding SelectedDirection, Mode=TwoWay}"
-          Width="300"
-          Margin="0,0,0,12"/>
+                      SelectedItem="{Binding SelectedDirection, Mode=TwoWay}"
+                      Width="300"
+                      Margin="0,0,0,12"/>
 
             <!-- CUSTOMER label -->
-        <TextBlock Text="CUSTOMER"
-                   FontWeight="Bold"
-                   Margin="0,0,0,4"/>
+            <TextBlock Text="CUSTOMER"
+                       FontWeight="Bold"
+                       Margin="0,0,0,4"/>
 
-        <!-- Customer ComboBox -->
-        <ComboBox ItemsSource="{Binding Customers}"
-                  DisplayMemberPath="Customer"
-                  SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
-                  Width="300"/>
+            <!-- Customer ComboBox -->
+            <!--<ComboBox ItemsSource="{Binding Customers}"
+                      DisplayMemberPath="Customer"
+                      SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
+                      Width="300"/>-->
+
             <TextBlock Text="TABLE / GROUP"
-           FontWeight="Bold"
-           Margin="0,12,0,4"/>
+                       FontWeight="Bold"
+                       Margin="0,12,0,4"/>
 
             <TextBlock Text="ALL"
-           FontSize="14"
-           FontWeight="SemiBold"
-           Margin="0,0,0,4">
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,4">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -72,9 +109,9 @@ Title="DSD"
 
             <!-- Outbound: show combo -->
             <ComboBox ItemsSource="{Binding TableOptions}"
-          SelectedItem="{Binding SelectedTableOption, Mode=TwoWay}"
-          Width="300"
-          Margin="0,4,0,0">
+                      SelectedItem="{Binding SelectedTableOption, Mode=TwoWay}"
+                      Width="300"
+                      Margin="0,4,0,0">
                 <ComboBox.Style>
                     <Style TargetType="ComboBox">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -88,16 +125,173 @@ Title="DSD"
             </ComboBox>
 
             <TextBlock Text="SEND TO CIS"
-           FontWeight="Bold"
-           Margin="0,12,0,4"/>
+                       FontWeight="Bold"
+                       Margin="0,12,0,4"/>
 
             <CheckBox Content="Yes"
-          IsChecked="{Binding SendToCis, Mode=TwoWay}"
-          FontSize="14"/>
+                      IsChecked="{Binding SendToCis, Mode=TwoWay}"
+                      FontSize="14"/>
+
             <Button Content="Run"
-        Command="{Binding RunCommand}"
-        Width="120"
-        Margin="0,16,0,0"/>
+                    Command="{Binding RunCommand}"
+                    Width="120"
+                    Margin="0,16,0,0"/>
+
         </StackPanel>
-</Grid>
+
+        <!-- RIGHT: Admin section -->
+
+        <Border Grid.Row="1"
+        Grid.Column="1"
+        Margin="16,0,0,0"
+        Padding="12"
+        CornerRadius="6"
+        Background="#95A0B6">
+
+
+            <TabControl>
+
+                <!-- TAB 1 -->
+                <TabItem Header="Admin - Daily Schedule">
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Filter -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="Filter:"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
+                            <ComboBox Width="240"
+                                      ItemsSource="{Binding Table1FilterOptions}"
+                                      SelectedItem="{Binding SelectedTable1Filter, Mode=TwoWay}"/>
+                        </StackPanel>
+
+                        <!-- Buttons -->
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                            <Button Content="Update"
+                                    Width="90"
+                                    Margin="0,0,8,0"
+                                    Command="{Binding UpdateTable1Command}"/>
+                            <Button Content="Copy"
+                                    Width="90"
+                                    Margin="0,0,8,0"
+                                    Command="{Binding CopyTable1Command}"/>
+                            <Button Content="Delete"
+                                    Width="90"
+                                    Command="{Binding DeleteTable1Command}"/>
+                        </StackPanel>
+
+                        <!-- Grid -->
+                      
+                        <DataGrid Grid.Row="2"
+          ItemsSource="{Binding DataContext.Table1Items,
+                                RelativeSource={RelativeSource AncestorType=Window}}"
+          SelectedItem="{Binding DataContext.SelectedTable1Item,
+                                 RelativeSource={RelativeSource AncestorType=Window},
+                                 Mode=TwoWay}"
+          AutoGenerateColumns="True"
+          CanUserAddRows="False"
+          IsReadOnly="False"/>
+                    </Grid>
+                </TabItem>
+
+                <!-- TAB 2 -->
+                <TabItem Header="Admin - API List">
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Filter -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="Filter:"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
+                            <ComboBox Width="240"
+                                      ItemsSource="{Binding Table2FilterOptions}"
+                                      SelectedItem="{Binding SelectedTable2Filter, Mode=TwoWay}"/>
+                        </StackPanel>
+
+                        <!-- Buttons -->
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                            <Button Content="Update"
+                                    Width="90"
+                                    Margin="0,0,8,0"
+                                    Command="{Binding UpdateTable2Command}"/>
+                            <Button Content="Copy"
+                                    Width="90"
+                                    Margin="0,0,8,0"
+                                    Command="{Binding CopyTable2Command}"/>
+                            <Button Content="Delete"
+                                    Width="90"
+                                    Command="{Binding DeleteTable2Command}"/>
+                        </StackPanel>
+
+                        <!-- Grid -->
+                        <DataGrid Grid.Row="2"
+                                  ItemsSource="{Binding Table2Items}"
+                                  SelectedItem="{Binding SelectedTable2Item, Mode=TwoWay}"
+                                  AutoGenerateColumns="True"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="False"/>
+                    </Grid>
+                </TabItem>
+
+                <!-- TAB 3 -->
+                <TabItem Header="Admin - Customer Info">
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Filter -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="Filter:"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
+                            <ComboBox Width="240"
+                                      ItemsSource="{Binding Table3FilterOptions}"
+                                      SelectedItem="{Binding SelectedTable3Filter, Mode=TwoWay}"/>
+                        </StackPanel>
+
+                        <!-- Buttons -->
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                            <Button Content="Update"
+                                    Width="90"
+                                    Margin="0,0,8,0"
+                                    Command="{Binding UpdateTable3Command}"/>
+                            <Button Content="Copy"
+                                    Width="90"
+                                    Margin="0,0,8,0"
+                                    Command="{Binding CopyTable3Command}"/>
+                            <Button Content="Delete"
+                                    Width="90"
+                                    Command="{Binding DeleteTable3Command}"/>
+                        </StackPanel>
+
+                        <!-- Grid -->
+                        <DataGrid Grid.Row="2"
+                                  ItemsSource="{Binding Table3Items}"
+                                  SelectedItem="{Binding SelectedTable3Item, Mode=TwoWay}"
+                                  AutoGenerateColumns="True"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="False"/>
+                    </Grid>
+                </TabItem>
+
+            </TabControl>
+        </Border>
+
+    </Grid>
 </Window>

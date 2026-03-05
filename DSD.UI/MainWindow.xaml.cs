@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using static Org.BouncyCastle.Math.EC.ECCurve;
+//using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace DSD.UI
 {
@@ -15,7 +15,7 @@ namespace DSD.UI
         public MainWindow()
         {
             InitializeComponent();
-
+            //MessageBox.Show($"MainWindow created: {GetHashCode()}");
 
             _config = new ConfigurationBuilder()
                         .SetBasePath(AppContext.BaseDirectory)
@@ -33,9 +33,11 @@ namespace DSD.UI
 
 
 
+
+
             ISqlService sqlService = new SqlService(_config);
 
-            DataContext = new MainViewModel(sqlService,_config);
+            DataContext = new MainViewModel(sqlService, _config);
 
             Loaded += async (_, __) =>
                 await ((MainViewModel)DataContext).LoadCustomersAsync();
