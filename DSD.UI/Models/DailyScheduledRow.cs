@@ -2,6 +2,7 @@
 {
     public class DailyScheduleRow
     {
+        public int jobId { get; set; } = 0;
         public string Cust { get; set; } = "";
         public string Job { get; set; } = "";
         public string TargetComputer { get; set; } = "";

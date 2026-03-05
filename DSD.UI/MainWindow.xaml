@@ -9,92 +9,80 @@
         Width="1500"
         Background="#76829a">
 
-    <Grid Margin="20">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        </Window.Resources>
 
+        <Grid Margin="20">
+
+        <!-- Layout definitions -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Header -->
             <RowDefinition Height="*"/>
-            <!-- Main content -->
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="320"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+
         <!-- HEADER -->
         <Border Grid.Row="0"
-        Grid.ColumnSpan="2"
-        Padding="12"
-        Margin="0,0,0,16"
-        CornerRadius="6"
-        Background="#95A0B6">
+                Grid.ColumnSpan="2"
+                Padding="12"
+                Margin="0,0,0,16"
+                CornerRadius="6"
+                Background="#95A0B6">
 
             <StackPanel Orientation="Horizontal"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
 
-                <TextBlock Text="CUSTOMER \ ENVIRONMENT"
-                   FontWeight="Bold"
-                   FontSize="14"
-                   Margin="0,0,10,0"
-                   VerticalAlignment="Center"/>
+                <!-- Changed "\" to "/" for clarity/safety -->
+                <TextBlock Text="CUSTOMER / ENVIRONMENT"
+                           FontWeight="Bold"
+                           FontSize="14"
+                           Margin="0,0,10,0"
+                           VerticalAlignment="Center"/>
 
                 <ComboBox ItemsSource="{Binding Customers}"
-                  DisplayMemberPath="Customer"
-                  SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
-                  Width="320"
-                  FontSize="14"/>
+                          DisplayMemberPath="Customer"
+                          SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
+                          Width="320"
+                          FontSize="14"/>
             </StackPanel>
         </Border>
-        <!-- LEFT: Existing parameter + Run panel -->
 
+        <!-- LEFT PANEL (Run controls) -->
         <StackPanel Grid.Row="1"
-            Grid.Column="0"
-            Width="320"
-            HorizontalAlignment="Left">
+                    Grid.Column="0"
+                    Width="300">
 
-
-            <!-- Instruction text -->
             <TextBlock TextWrapping="Wrap"
                        FontSize="13"
                        Margin="0,0,0,12">
-                Choose the customer above that you would like to work 
-                with.  Then choose the APP you would like to run Outbound
-                has 2 options ALL tables or a specific table and send data 
-                to CIS 
+                Choose the customer above that you would like to work with.
+                Then choose the APP you would like to run. Outbound has two
+                options: ALL tables or a specific table.
             </TextBlock>
 
-            <!-- Direction label -->
             <TextBlock Text="DIRECTION"
                        FontWeight="Bold"
                        Margin="0,0,0,4"/>
 
-            <!-- ✅ BOUND Direction ComboBox -->
             <ComboBox ItemsSource="{Binding Directions}"
                       SelectedItem="{Binding SelectedDirection, Mode=TwoWay}"
-                      Width="300"
+                      Width="280"
                       Margin="0,0,0,12"/>
-
-            <!-- CUSTOMER label -->
-            <TextBlock Text="CUSTOMER"
-                       FontWeight="Bold"
-                       Margin="0,0,0,4"/>
-
-            <!-- Customer ComboBox -->
-            <!--<ComboBox ItemsSource="{Binding Customers}"
-                      DisplayMemberPath="Customer"
-                      SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
-                      Width="300"/>-->
 
             <TextBlock Text="TABLE / GROUP"
                        FontWeight="Bold"
                        Margin="0,12,0,4"/>
 
+            <!-- Inbound = ALL -->
             <TextBlock Text="ALL"
                        FontSize="14"
-                       FontWeight="SemiBold"
-                       Margin="0,0,0,4">
+                       FontWeight="SemiBold">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -107,10 +95,10 @@
                 </TextBlock.Style>
             </TextBlock>
 
-            <!-- Outbound: show combo -->
+            <!-- Outbound table selector -->
             <ComboBox ItemsSource="{Binding TableOptions}"
                       SelectedItem="{Binding SelectedTableOption, Mode=TwoWay}"
-                      Width="300"
+                      Width="280"
                       Margin="0,4,0,0">
                 <ComboBox.Style>
                     <Style TargetType="ComboBox">
@@ -136,157 +124,254 @@
                     Command="{Binding RunCommand}"
                     Width="120"
                     Margin="0,16,0,0"/>
-
         </StackPanel>
 
-        <!-- RIGHT: Admin section -->
-
+        <!-- RIGHT PANEL (Tabs) -->
         <Border Grid.Row="1"
-        Grid.Column="1"
-        Margin="16,0,0,0"
-        Padding="12"
-        CornerRadius="6"
-        Background="#95A0B6">
-
+                Grid.Column="1"
+                Margin="16,0,0,0"
+                Padding="12"
+                CornerRadius="6"
+                Background="#95A0B6">
 
             <TabControl>
 
-                <!-- TAB 1 -->
+                <!-- TAB 1: Daily Schedule -->
                 <TabItem Header="Admin - Daily Schedule">
                     <Grid Margin="6">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Filter -->
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                            <TextBlock Text="Filter:"
-                                       FontWeight="SemiBold"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,8,0"/>
-                            <ComboBox Width="240"
-                                      ItemsSource="{Binding Table1FilterOptions}"
-                                      SelectedItem="{Binding SelectedTable1Filter, Mode=TwoWay}"/>
-                        </StackPanel>
-
                         <!-- Buttons -->
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <StackPanel Grid.Row="0"
+                                    Orientation="Horizontal"
+                                    Margin="0,0,0,10">
                             <Button Content="Update"
                                     Width="90"
                                     Margin="0,0,8,0"
-                                    Command="{Binding UpdateTable1Command}"/>
+                                    Command="{Binding DailySchedule.UpdateCommand}"/>
+
                             <Button Content="Copy"
                                     Width="90"
                                     Margin="0,0,8,0"
-                                    Command="{Binding CopyTable1Command}"/>
+                                    Command="{Binding DailySchedule.CopyCommand}"/>
+
                             <Button Content="Delete"
                                     Width="90"
-                                    Command="{Binding DeleteTable1Command}"/>
+                                    Command="{Binding DailySchedule.DeleteCommand}"/>
                         </StackPanel>
 
                         <!-- Grid -->
-                      
-                        <DataGrid Grid.Row="2"
-          ItemsSource="{Binding DataContext.Table1Items,
-                                RelativeSource={RelativeSource AncestorType=Window}}"
-          SelectedItem="{Binding DataContext.SelectedTable1Item,
-                                 RelativeSource={RelativeSource AncestorType=Window},
-                                 Mode=TwoWay}"
-          AutoGenerateColumns="True"
-          CanUserAddRows="False"
-          IsReadOnly="False"/>
-                    </Grid>
-                </TabItem>
-
-                <!-- TAB 2 -->
-                <TabItem Header="Admin - API List">
-                    <Grid Margin="6">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <!-- Filter -->
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                            <TextBlock Text="Filter:"
-                                       FontWeight="SemiBold"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,8,0"/>
-                            <ComboBox Width="240"
-                                      ItemsSource="{Binding Table2FilterOptions}"
-                                      SelectedItem="{Binding SelectedTable2Filter, Mode=TwoWay}"/>
-                        </StackPanel>
-
-                        <!-- Buttons -->
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
-                            <Button Content="Update"
-                                    Width="90"
-                                    Margin="0,0,8,0"
-                                    Command="{Binding UpdateTable2Command}"/>
-                            <Button Content="Copy"
-                                    Width="90"
-                                    Margin="0,0,8,0"
-                                    Command="{Binding CopyTable2Command}"/>
-                            <Button Content="Delete"
-                                    Width="90"
-                                    Command="{Binding DeleteTable2Command}"/>
-                        </StackPanel>
-
-                        <!-- Grid -->
-                        <DataGrid Grid.Row="2"
-                                  ItemsSource="{Binding Table2Items}"
-                                  SelectedItem="{Binding SelectedTable2Item, Mode=TwoWay}"
+                        <DataGrid Grid.Row="1"
+                                  ItemsSource="{Binding DailySchedule.Items}"
+                                  SelectedItem="{Binding DailySchedule.SelectedItem, Mode=TwoWay}"
                                   AutoGenerateColumns="True"
                                   CanUserAddRows="False"
                                   IsReadOnly="False"/>
                     </Grid>
                 </TabItem>
 
-                <!-- TAB 3 -->
+                <!-- TAB 2: API List -->
+                <TabItem Header="Admin - API List">
+                    <TextBlock Margin="12"
+                               Text="API List grid will be added here."/>
+                </TabItem>
+
                 <TabItem Header="Admin - Customer Info">
                     <Grid Margin="6">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Filter -->
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                            <TextBlock Text="Filter:"
-                                       FontWeight="SemiBold"
-                                       VerticalAlignment="Center"
-                                       Margin="0,0,8,0"/>
-                            <ComboBox Width="240"
-                                      ItemsSource="{Binding Table3FilterOptions}"
-                                      SelectedItem="{Binding SelectedTable3Filter, Mode=TwoWay}"/>
-                        </StackPanel>
-
                         <!-- Buttons -->
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                            <Button Content="Reload"
+                    Width="90"
+                    Margin="0,0,8,0"
+                    Command="{Binding CustomerInfo.ReloadCommand}" />
+
                             <Button Content="Update"
-                                    Width="90"
-                                    Margin="0,0,8,0"
-                                    Command="{Binding UpdateTable3Command}"/>
-                            <Button Content="Copy"
-                                    Width="90"
-                                    Margin="0,0,8,0"
-                                    Command="{Binding CopyTable3Command}"/>
-                            <Button Content="Delete"
-                                    Width="90"
-                                    Command="{Binding DeleteTable3Command}"/>
+                    Width="90"
+                    Command="{Binding CustomerInfo.UpdateCommand}" />
+
+                            <!-- Busy indicator -->
+                            <TextBlock Margin="12,0,0,0"
+                       VerticalAlignment="Center"
+                       Text="Loading..."
+                       Visibility="{Binding CustomerInfo.IsBusy, Converter={StaticResource BoolToVis}}"/>
                         </StackPanel>
 
-                        <!-- Grid -->
-                        <DataGrid Grid.Row="2"
-                                  ItemsSource="{Binding Table3Items}"
-                                  SelectedItem="{Binding SelectedTable3Item, Mode=TwoWay}"
-                                  AutoGenerateColumns="True"
-                                  CanUserAddRows="False"
-                                  IsReadOnly="False"/>
+                        <!-- Form -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <Grid Margin="12" Grid.IsSharedSizeScope="True">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.Resources>
+                                    <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Margin" Value="0,0,6,6"/>
+                                    </Style>
+
+                                    <Style x:Key="FieldTextBoxStyle" TargetType="TextBox">
+                                        <Setter Property="Width" Value="220"/>
+                                        <Setter Property="Margin" Value="0,0,0,6"/>
+                                    </Style>
+                                </Grid.Resources>
+
+                                <!-- LEFT COLUMN -->
+                                <Grid Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Customer:"/>
+                                    <TextBox   Grid.Row="0" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.Customer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Url:"/>
+                                    <TextBox   Grid.Row="1" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.Url, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Grant_Type:"/>
+                                    <TextBox   Grid.Row="2" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.Grant_Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Client_ID:"/>
+                                    <TextBox   Grid.Row="3" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.Client_ID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Client_Secret:"/>
+                                    <TextBox   Grid.Row="4" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.Client_Secret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Scope:"/>
+                                    <TextBox   Grid.Row="5" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.Scope, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="RootUrl:"/>
+                                    <TextBox   Grid.Row="6" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.RootUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="ftpHost:"/>
+                                    <TextBox   Grid.Row="7" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.ftpHost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="ftpUser:"/>
+                                    <TextBox   Grid.Row="8" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.ftpUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="9" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="ftpPass:"/>
+                                    <TextBox   Grid.Row="9" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.ftpPass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="10" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="ftpRemoteFilePath:"/>
+                                    <TextBox   Grid.Row="10" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.ftpRemoteFilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="11" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="ftpLocalFilePath:"/>
+                                    <TextBox   Grid.Row="11" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.ftpLocalFilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+
+                                <!-- RIGHT COLUMN -->
+                                <Grid Grid.Column="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="DataSource:"/>
+                                    <TextBox   Grid.Row="0" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.DataSource, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="UserID:"/>
+                                    <TextBox   Grid.Row="1" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.UserID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="Password:"/>
+                                    <TextBox   Grid.Row="2" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="InitialCatalog:"/>
+                                    <TextBox   Grid.Row="3" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.InitialCatalog, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="DayOffset:"/>
+                                    <TextBox   Grid.Row="4" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.DayOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, NotifyOnValidationError=True}" />
+
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="email_tenantId:"/>
+                                    <TextBox   Grid.Row="5" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.email_tenantId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="6" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="email_clientId:"/>
+                                    <TextBox   Grid.Row="6" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.email_clientId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="7" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="email_secret:"/>
+                                    <TextBox   Grid.Row="7" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.email_secret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="8" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="email_sender:"/>
+                                    <TextBox   Grid.Row="8" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.email_sender, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="9" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="email_recipient:"/>
+                                    <TextBox   Grid.Row="9" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.email_recipient, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="10" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="PROD:"/>
+                                    <CheckBox  Grid.Row="10" Grid.Column="1" Margin="0,0,0,6"
+                               IsChecked="{Binding CustomerInfo.Current.PROD, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                               VerticalAlignment="Center" />
+
+                                    <TextBlock Grid.Row="11" Grid.Column="0" Style="{StaticResource FieldLabelStyle}" Text="HISTORY_DAYS:"/>
+                                    <TextBox   Grid.Row="11" Grid.Column="1" Style="{StaticResource FieldTextBoxStyle}"
+                               Text="{Binding CustomerInfo.Current.HISTORY_DAYS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, NotifyOnValidationError=True}" />
+                                </Grid>
+
+                            </Grid>
+                        </ScrollViewer>
                     </Grid>
                 </TabItem>
 

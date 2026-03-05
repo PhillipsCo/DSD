@@ -1,13 +1,14 @@
 ﻿using DSD.Common.Models;
 using DSD.Common.Services;
-using DSD.UI.Repositories;
-using DSD.UI.Models;
+using DSD.UI.ViewModels;   // DailyScheduleGridViewModel, CustomerInfoViewModel
+
 using Microsoft.Extensions.Configuration;
+
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,47 +16,298 @@ using System.Windows.Input;
 
 namespace DSD.UI.ViewModels;
 
+/// <summary>
+/// MainViewModel
+/// ============
+///
+/// This ViewModel is the "application shell / coordinator".
+///
+/// RESPONSIBILITIES (by design):
+///  ✅ Global application state shared across tabs:
+///      - SelectedCustomer
+///      - SelectedDirection (Inbound/Outbound)
+///      - SelectedTableOption (ALL or a table)
+///      - SendToCis flag
+///  ✅ Top-level Run command (launch external executable)
+///  ✅ Creates and coordinates child ViewModels (one per tab)
+///
+/// NON-RESPONSIBILITIES:
+///  ❌ It does NOT own tab-specific SQL or CRUD logic.
+///     Each tab ViewModel owns its own data and persistence.
+/// </summary>
 public class MainViewModel : INotifyPropertyChanged
 {
     // =========================================================
-    // Fields / Services
+    // 1) Services / Dependencies (shared across the application)
     // =========================================================
+
     private readonly IConfiguration _config;
     private readonly ISqlService _sqlService;
-    private readonly DailyScheduleRepository _dailyScheduleRepo;
 
     // =========================================================
-    // Constructor / Commands
+    // 2) Child ViewModels (one per tab)
     // =========================================================
+    //
+    // MainViewModel creates these VMs and supplies shared context (SelectedCustomer).
+    // Each child VM owns its own data, commands, and repository/SQL details.
+    //
+
+    /// <summary>
+    /// ViewModel backing the "Admin - Daily Schedule" tab.
+    /// Owns its own Items, SelectedItem, and CRUD commands.
+    /// </summary>
+    public DailyScheduleGridViewModel DailySchedule { get; }
+
+    /// <summary>
+    /// ViewModel backing the "Admin - Customer Info" tab.
+    /// Owns its own Current record and Update command.
+    /// </summary>
+    public CustomerInfoViewModel CustomerInfo { get; }  // ✅ ADDED
+
+    // =========================================================
+    // 3) Commands (global commands owned by the shell)
+    // =========================================================
+
+    /// <summary>
+    /// Launches the inbound/outbound executable for the selected customer and options.
+    /// </summary>
     public ICommand RunCommand { get; }
+
+    // =========================================================
+    // 4) Constructor (composition root for ViewModels)
+    // =========================================================
 
     public MainViewModel(ISqlService sqlService, IConfiguration config)
     {
+        // Store dependencies
         _sqlService = sqlService;
         _config = config;
 
-        // If your repository needs ISqlService, wire it once here
-        _dailyScheduleRepo = new DailyScheduleRepository(_config);
+        // -----------------------------------------------------
+        // Create child tab ViewModels
+        // -----------------------------------------------------
+        // IMPORTANT:
+        // - These child VMs are created once at startup
+        // - They are "fed" customer context via SetCustomer(...)
+        //
+        DailySchedule = new DailyScheduleGridViewModel(_config);
+        CustomerInfo = new CustomerInfoViewModel(_config);  // ✅ ADDED
 
-        // Defaults so UI state is stable
+        // -----------------------------------------------------
+        // Default UI state (safe initial values)
+        // -----------------------------------------------------
         _selectedDirection = "Inbound";
-        TableOptions.Add("ALL");
-        SelectedTableOption = "ALL";
         _sendToCis = true;
 
+        TableOptions.Add("ALL");
+        _selectedTableOption = "ALL";
+
+        // -----------------------------------------------------
+        // Command wiring
+        // -----------------------------------------------------
         RunCommand = new DSD.UI.RelayCommand(Run, CanRun);
     }
 
     // =========================================================
-    // Run Command Logic
+    // 5) Global Customer Context (drives all tabs)
     // =========================================================
-    private bool CanRun()
+
+    /// <summary>
+    /// Customers list for the top ComboBox.
+    /// </summary>
+    public ObservableCollection<CustomerRow> Customers { get; } = new();
+
+    private CustomerRow? _selectedCustomer;
+
+    /// <summary>
+    /// Selected customer from the ComboBox.
+    /// When this changes, we propagate it to each child tab VM.
+    /// </summary>
+    public CustomerRow? SelectedCustomer
     {
-        return SelectedCustomer != null &&
-               !string.IsNullOrWhiteSpace(SelectedDirection) &&
-               !string.IsNullOrWhiteSpace(SelectedTableOption);
+        get => _selectedCustomer;
+        set
+        {
+            // If the customer didn't actually change, avoid duplicate reload work.
+            if (_selectedCustomer?.Id == value?.Id)
+                return;
+
+            _selectedCustomer = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(SelectedCustomerId));
+
+            // Propagate customer context to child tabs.
+            // Use 'value' (the new selection) to avoid any timing issues.
+            PropagateCustomerContext(value);
+
+            // Direction affects outbound table options, so reload them when customer changes too.
+            // Fire-and-forget is okay because UI remains responsive.
+            _ = LoadTableOptionsAsync();
+        }
     }
 
+    /// <summary>
+    /// Convenience property sometimes used in UI.
+    /// </summary>
+    public int? SelectedCustomerId => SelectedCustomer?.Id;
+
+    /// <summary>
+    /// Loads customers at application startup.
+    /// This is typically called after MainViewModel is constructed.
+    /// </summary>
+    public async Task LoadCustomersAsync()
+    {
+        var rows = await _sqlService.GetCustomersAsync();
+
+        Customers.Clear();
+        foreach (var row in rows)
+            Customers.Add(row);
+
+        // Select first customer by default to initialize the UI and child tabs.
+        if (Customers.Count > 0)
+            SelectedCustomer = Customers[0];
+    }
+
+    /// <summary>
+    /// Centralized place to push customer changes into all child tab ViewModels.
+    /// This keeps the SelectedCustomer setter clean and makes future tabs easy to add.
+    /// </summary>
+    private void PropagateCustomerContext(CustomerRow? customer)
+    {
+        // Daily schedule tab: reload grid rows for this customer
+        DailySchedule.SetCustomer(customer);
+
+        // Customer info tab: load the editable customer record for this customer
+        CustomerInfo.SetCustomer(customer);
+
+        // Future tabs go here:
+        // ApiList.SetCustomer(customer);
+        // AnotherTab.SetCustomer(customer);
+    }
+
+    // =========================================================
+    // 6) Direction (Inbound / Outbound)
+    // =========================================================
+
+    public ObservableCollection<string> Directions { get; } =
+        new() { "Inbound", "Outbound" };
+
+    private string _selectedDirection;
+
+    /// <summary>
+    /// Inbound/Outbound selector.
+    /// Changing this impacts available table options.
+    /// </summary>
+    public string SelectedDirection
+    {
+        get => _selectedDirection;
+        set
+        {
+            if (string.Equals(_selectedDirection, value, StringComparison.Ordinal))
+                return;
+
+            _selectedDirection = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsOutbound));
+
+            // Direction affects outbound table options.
+            _ = LoadTableOptionsAsync();
+        }
+    }
+
+    public bool IsOutbound => SelectedDirection == "Outbound";
+
+    // =========================================================
+    // 7) Outbound Table / Group Options
+    // =========================================================
+
+    public ObservableCollection<string> TableOptions { get; } = new();
+
+    private string? _selectedTableOption;
+
+    /// <summary>
+    /// Selected table or group (ALL or a specific table).
+    /// </summary>
+    public string? SelectedTableOption
+    {
+        get => _selectedTableOption;
+        set
+        {
+            if (string.Equals(_selectedTableOption, value, StringComparison.Ordinal))
+                return;
+
+            _selectedTableOption = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Populates TableOptions when direction is Outbound and a customer is selected.
+    /// Always includes "ALL".
+    /// </summary>
+    private async Task LoadTableOptionsAsync()
+    {
+        TableOptions.Clear();
+        TableOptions.Add("ALL");
+
+        // Only fetch tables when outbound + selected customer has a catalog.
+        if (IsOutbound
+            && SelectedCustomer is not null
+            && !string.IsNullOrWhiteSpace(SelectedCustomer.InitialCatalog))
+        {
+            var tables = await _sqlService.GetOutboundTableNamesAsync(SelectedCustomer.InitialCatalog);
+
+            foreach (var t in tables)
+            {
+                if (string.IsNullOrWhiteSpace(t)) continue;
+                if (string.Equals(t, "ALL", StringComparison.OrdinalIgnoreCase)) continue;
+                if (!TableOptions.Contains(t)) TableOptions.Add(t);
+            }
+        }
+
+        // Default selection after reload.
+        SelectedTableOption = "ALL";
+
+        // Not strictly required because ObservableCollection notifies on changes,
+        // but harmless if you want to force refresh in some bindings.
+        OnPropertyChanged(nameof(TableOptions));
+        OnPropertyChanged(nameof(SelectedTableOption));
+    }
+
+    // =========================================================
+    // 8) Send To CIS flag (global option)
+    // =========================================================
+
+    private bool _sendToCis;
+
+    public bool SendToCis
+    {
+        get => _sendToCis;
+        set
+        {
+            if (_sendToCis == value) return;
+            _sendToCis = value;
+            OnPropertyChanged();
+        }
+    }
+
+    // =========================================================
+    // 9) Run Command Logic (Process Launch)
+    // =========================================================
+
+    /// <summary>
+    /// Determines whether the Run button should be enabled.
+    /// </summary>
+    private bool CanRun()
+    {
+        return SelectedCustomer != null
+            && !string.IsNullOrWhiteSpace(SelectedDirection)
+            && !string.IsNullOrWhiteSpace(SelectedTableOption);
+    }
+
+    /// <summary>
+    /// Confirm then run the executable.
+    /// </summary>
     private void Run()
     {
         var message =
@@ -80,30 +332,20 @@ Do you want to continue?";
         ExecuteRun();
     }
 
+    /// <summary>
+    /// Performs the actual process launch.
+    /// </summary>
     private void ExecuteRun()
     {
-        // NOTE: In your JSON you showed full paths (C:\CIS\APPS\...)
-        // In that case you should NOT Path.Combine with BaseDirectory.
-        // Use the string as-is.
         var exePath = SelectedDirection == "Inbound"
             ? _config["InboundPath"]
             : _config["OutboundPath"];
 
-        if (string.IsNullOrWhiteSpace(exePath))
+        if (string.IsNullOrWhiteSpace(exePath) || !File.Exists(exePath))
         {
             MessageBox.Show(
-                "InboundPath/OutboundPath is missing from appsettings.json",
-                "Configuration Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-            return;
-        }
-
-        if (!File.Exists(exePath))
-        {
-            MessageBox.Show(
-                $"Could not find executable at:\n{exePath}",
-                "Executable Not Found",
+                $"Executable not found:\n{exePath}",
+                "Execution Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             return;
@@ -112,231 +354,23 @@ Do you want to continue?";
         var customer = SelectedCustomer?.Customer ?? "";
         var group = SelectedTableOption ?? "ALL";
         var sendToCis = SendToCis ? "Y" : "N";
+
         var arguments = $"{customer} {group} {sendToCis}";
 
-        try
+        Process.Start(new ProcessStartInfo
         {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = exePath,
-                Arguments = arguments,
-                UseShellExecute = true,
-                WorkingDirectory = Path.GetDirectoryName(exePath)!,
-                CreateNoWindow = false
-            };
-
-            Process.Start(startInfo);
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(
-                $"Failed to start process:\n{ex.Message}",
-                "Execution Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-        }
+            FileName = exePath,
+            Arguments = arguments,
+            UseShellExecute = true,
+            WorkingDirectory = Path.GetDirectoryName(exePath)!,
+            CreateNoWindow = false
+        });
     }
 
     // =========================================================
-    // Customers
+    // 10) INotifyPropertyChanged
     // =========================================================
-    public ObservableCollection<CustomerRow> Customers { get; } = new();
 
-    private CustomerRow? _selectedCustomer;
-    public CustomerRow? SelectedCustomer
-    {
-        get => _selectedCustomer;
-        set
-        {
-            //if (ReferenceEquals(_selectedCustomer, value)) return;
-
-            if(_selectedCustomer?.Id == value?.Id)
-            return;
-
-            _selectedCustomer = value;
-
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(SelectedCustomerId));
-
-            // Refresh dependent UI/data when customer changes
-            _ = LoadTableOptionsAsync();
-            _ = LoadDailyScheduleAsync();   // ✅ Tab 1: Daily Schedule
-        }
-    }
-
-    public int? SelectedCustomerId => SelectedCustomer?.Id;
-
-    // =========================================================
-    // Direction (Inbound/Outbound)
-    // =========================================================
-    public ObservableCollection<string> Directions { get; } =
-        new() { "Inbound", "Outbound" };
-
-    private string _selectedDirection;
-    public string SelectedDirection
-    {
-        get => _selectedDirection;
-        set
-        {
-            if (string.Equals(_selectedDirection, value, StringComparison.Ordinal)) return;
-            _selectedDirection = value;
-
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsOutbound));
-
-            // Refresh dependent UI/data when direction changes
-            _ = LoadTableOptionsAsync();
-        }
-    }
-
-    public bool IsOutbound => SelectedDirection == "Outbound";
-
-    // =========================================================
-    // Outbound tables/groups
-    // =========================================================
-    public ObservableCollection<string> TableOptions { get; } = new();
-
-    private string? _selectedTableOption;
-    public string? SelectedTableOption
-    {
-        get => _selectedTableOption;
-        set
-        {
-            if (string.Equals(_selectedTableOption, value, StringComparison.Ordinal)) return;
-            _selectedTableOption = value;
-            OnPropertyChanged();
-        }
-    }
-
-    // =========================================================
-    // Send To CIS
-    // =========================================================
-    private bool _sendToCis;
-    public bool SendToCis
-    {
-        get => _sendToCis;
-        set
-        {
-            if (_sendToCis == value) return;
-            _sendToCis = value;
-            OnPropertyChanged();
-        }
-    }
-
-    // =========================================================
-    // TAB 1 - Daily Schedule (DataGrid backing)
-    // =========================================================
-    public ObservableCollection<DailyScheduleRow> Table1Items { get; } = new();
-
-    private DailyScheduleRow? _selectedTable1Item;
-    public DailyScheduleRow? SelectedTable1Item
-    {
-        get => _selectedTable1Item;
-        set
-        {
-            if (ReferenceEquals(_selectedTable1Item, value)) return;
-            _selectedTable1Item = value;
-            OnPropertyChanged();
-        }
-    }
-
-    // =========================================================
-    // Load Methods
-    // =========================================================
-    //public void ForceAddTestRow()
-    //{
-    //    Table1Items.Add(new DailyScheduleRow
-    //    {
-    //        Cust = "Ralph",
-    //        Job = "TEST JOB",
-    //        TargetComputer = "LOCAL",
-    //        ScheduleTime = TimeSpan.FromHours(12),
-    //        ExecuteWeekDays = "MTWTF",
-    //        IsActive = true,
-    //        RUNGROUP = "TEST",
-    //        SendCIS = true
-    //    });
-    //}
-
-    public async Task LoadCustomersAsync()
-    {
-
-        //MessageBox.Show("LoadCustomersAsync called");
-        //ForceAddTestRow();
-        var rows = await _sqlService.GetCustomersAsync();
-        //MessageBox.Show("LoadDailyScheduleAsync entered");
-        Customers.Clear();
-        foreach (var row in rows)
-            Customers.Add(row);
-
-        if (Customers.Count > 0)
-            SelectedCustomer = Customers[0];   // triggers LoadTableOptionsAsync + LoadDailyScheduleAsync
-        else
-        {
-            // ensure consistent UI state
-            await LoadTableOptionsAsync();
-            Table1Items.Clear();
-        }
-    }
-
-    private async Task LoadTableOptionsAsync()
-    {
-        TableOptions.Clear();
-        TableOptions.Add("ALL");
-
-        if (IsOutbound &&
-            SelectedCustomer is not null &&
-            !string.IsNullOrWhiteSpace(SelectedCustomer.InitialCatalog))
-        {
-            var tables = await _sqlService.GetOutboundTableNamesAsync(SelectedCustomer.InitialCatalog);
-
-            foreach (var t in tables)
-            {
-                if (string.IsNullOrWhiteSpace(t)) continue;
-                if (string.Equals(t, "ALL", StringComparison.OrdinalIgnoreCase)) continue;
-                if (!TableOptions.Contains(t)) TableOptions.Add(t);
-            }
-        }
-
-        // Always reset to ALL when list changes
-        SelectedTableOption = "ALL";
-        OnPropertyChanged(nameof(TableOptions));
-        OnPropertyChanged(nameof(SelectedTableOption));
-    }
-
-    //private async Task LoadDailyScheduleAsync()
-    //{
-    //    Table1Items.Clear();
-
-    //    //if (SelectedCustomer == null)
-    //    //    return;
-
-    //    var rows = await _dailyScheduleRepo.GetByCustomerAsync(SelectedCustomer.Customer);
-
-    //    //foreach (var row in rows)
-    //    //    Table1Items.Add(row);
-    //    Application.Current.Dispatcher.Invoke(() =>
-    //    {
-    //        Table1Items.Clear();
-    //        foreach (var row in rows)
-    //            Table1Items.Add(row);
-    //    });
-    //}
-    private async Task LoadDailyScheduleAsync()
-    {
-        if (SelectedCustomer == null)
-            return;
-
-        var rows = await _dailyScheduleRepo.GetByCustomerAsync(SelectedCustomer.Customer);
-
-        Table1Items.Clear();
-
-        foreach (var row in rows)
-            Table1Items.Add(row);
-    }
-    // =========================================================
-    // INotifyPropertyChanged
-    // =========================================================
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string? name = null)
