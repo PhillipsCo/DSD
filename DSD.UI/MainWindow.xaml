@@ -175,8 +175,48 @@
 
                 <!-- TAB 2: API List -->
                 <TabItem Header="Admin - API List">
-                    <TextBlock Margin="12"
-                               Text="API List grid will be added here."/>
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Buttons -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                            <Button Content="Update"
+                    Width="90"
+                    Margin="0,0,8,0"
+                    Command="{Binding ApiList.UpdateCommand}"/>
+
+                            <Button Content="Copy"
+                    Width="90"
+                    Margin="0,0,8,0"
+                    Command="{Binding ApiList.CopyCommand}"/>
+
+                            <Button Content="Delete"
+                    Width="90"
+                    Command="{Binding ApiList.DeleteCommand}"/>
+                        </StackPanel>
+
+                        <!-- Grid -->
+                        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding ApiList.Items}"
+                  SelectedItem="{Binding ApiList.SelectedItem, Mode=TwoWay}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="True"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="TABLE_NAME" Binding="{Binding TABLE_NAME, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                                <DataGridTextColumn Header="API_NAME"   Binding="{Binding API_NAME,   UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                                <DataGridTextColumn Header="FILTER"     Binding="{Binding FILTER,     UpdateSourceTrigger=PropertyChanged}" Width="2*"/>
+                                <DataGridTextColumn Header="BATCHSIZE"     Binding="{Binding BATCHSIZE,     UpdateSourceTrigger=PropertyChanged}" Width="2*"/>
+                                <DataGridTextColumn Header="DIR"        Binding="{Binding DIR,        UpdateSourceTrigger=PropertyChanged}" Width="Auto"/>
+                                <DataGridTextColumn Header="RUNGROUP"   Binding="{Binding RUNGROUP,   UpdateSourceTrigger=PropertyChanged}" Width="Auto"/>
+                                <DataGridTextColumn Header="ENDPOINT"   Binding="{Binding ENDPOINT,   UpdateSourceTrigger=PropertyChanged}" Width="3*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
                 </TabItem>
 
                 <TabItem Header="Admin - Customer Info">
