@@ -69,7 +69,7 @@ namespace DSD.Common.Services
                     Log.Information("Downloading files...");
                     Directory.CreateDirectory(ftpLocalFilePath);
                     var files = client.ListDirectory(ftpRemoteFilePath)
-                                      .Where(f => !f.IsDirectory && f.Name.EndsWith(".csv"));
+                                      .Where(f => !f.IsDirectory && f.Name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase));
                     foreach (var file in files)
                     {
                         var localPath = Path.Combine(ftpLocalFilePath, file.Name);

@@ -1,5 +1,12 @@
 ﻿<Application x:Class="DSD.UI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+    <Application.Resources>
+        <!-- Shared resources available to ALL windows, tabs, and UserControls -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </Application.Resources>
+
     <!-- MainWindow is created in App.xaml.cs via DI -->
 </Application>

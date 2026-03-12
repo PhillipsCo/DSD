@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DSD.Common")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9b88c884d06fea60f2854414d4a7466cda3e6ebb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c2a6d1a8e68128c82b1c56e166ef35bf17deaad0")]
 [assembly: System.Reflection.AssemblyProductAttribute("DSD.Common")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DSD.Common")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

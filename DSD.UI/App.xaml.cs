@@ -14,6 +14,20 @@ namespace DSD.UI
 
         protected override void OnStartup(StartupEventArgs e)
         {
+
+            // ✅ Manually load App.xaml resources
+            //Resources.MergedDictionaries.Add(
+            //    new ResourceDictionary
+            //    {
+            //        Source = new Uri("/DSD.UI;component/App.xaml", UriKind.Relative)
+            //    });
+
+            Resources.MergedDictionaries.Add(
+                   new ResourceDictionary
+                   {
+                       Source = new Uri("/DSD.UI;component/Resources/Resources.xaml", UriKind.Relative)
+                   });
+
             base.OnStartup(e);
 
             var configuration = new ConfigurationBuilder()

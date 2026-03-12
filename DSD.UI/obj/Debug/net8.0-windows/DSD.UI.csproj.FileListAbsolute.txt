@@ -134,3 +134,14 @@ C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\refint\DSD.UI.dll
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\DSD.UI.pdb
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\DSD.UI.genruntimeconfig.cache
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\ref\DSD.UI.dll
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\DSD.UI_MarkupCompile.lref
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\ApiTesterView.baml
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\ApiTesterView.g.cs
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\CustomerInfoView.g.cs
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\CustomerInfoView.baml
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Resources\Resources.baml
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\ApiListView.g.cs
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\ApiListView.baml
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\DailyScheduleView.g.cs
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\DailyScheduleView.baml
