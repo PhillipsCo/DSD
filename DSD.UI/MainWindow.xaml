@@ -153,6 +153,10 @@
                 <TabItem Header="Admin - Customer Info">
                     <views:CustomerInfoView />
                 </TabItem>
+                <!-- TAB 5: Load CISOUT -->
+                <TabItem Header="Admin - Load Invoices from CIS">
+                    <views:LoadCsvView />
+                </TabItem>
 
             </TabControl>
         </Border>

@@ -14,7 +14,17 @@ namespace DSD.UI
         private readonly IConfiguration _config;
         public MainWindow()
         {
-            InitializeComponent();
+
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "XAML Load Error");
+                throw;
+            }
+
             //MessageBox.Show($"MainWindow created: {GetHashCode()}");
 
             _config = new ConfigurationBuilder()
@@ -39,9 +49,20 @@ namespace DSD.UI
 
             DataContext = new MainViewModel(sqlService, _config);
 
-            Loaded += async (_, __) =>
-                await ((MainViewModel)DataContext).LoadCustomersAsync();
+            //Loaded += async (_, __) =>
+            //    await ((MainViewModel)DataContext).LoadCustomersAsync();
 
+
+            Loaded += async (_, __) =>
+            {
+                if (DataContext is not MainViewModel vm)
+                {
+                    MessageBox.Show("MainViewModel is not set as DataContext.");
+                    return;
+                }
+
+                await vm.LoadCustomersAsync();
+            };
 
 
 

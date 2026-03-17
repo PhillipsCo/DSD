@@ -145,3 +145,5 @@ C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\ApiListView.g.cs
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\ApiListView.baml
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\DailyScheduleView.g.cs
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\DailyScheduleView.baml
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\LoadCsvView.g.cs
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\LoadCsvView.baml

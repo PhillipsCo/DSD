@@ -67,19 +67,19 @@ namespace DSD.Inbound.Runners
                 bool skipEmail = _configuration.GetValue<bool>("SkipSteps:SkipEmail");
 
                 // STEP 3: Retrieve API list if not skipped
-                var apiList = new List<TableApiName>();
-                if (!skipApiList)
-                {
-                    apiList = await _sqlService.GetApiListAsync(accessInfo.InitialCatalog, group, "Inbound");
-                    Log.Information("Retrieved {Count} APIs for execution", apiList.Count);
+                //var apiList = new List<TableApiName>();
+                //if (!skipApiList)
+                //{
+                //    apiList = await _sqlService.GetApiListAsync(accessInfo.InitialCatalog, group, "Inbound");
+                //    Log.Information("Retrieved {Count} APIs for execution", apiList.Count);
 
-                    // If no APIs found, exit early
-                    if (apiList.Count == 0)
-                    {
-                        Log.Warning("No APIs found for customer {CustomerCode}. Exiting process.", customerCode);
-                        return;
-                    }
-                }
+                //    // If no APIs found, exit early
+                //    if (apiList.Count == 0)
+                //    {
+                //        Log.Warning("No APIs found for customer {CustomerCode}. Exiting process.", customerCode);
+                //        return;
+                //    }
+                //}
 
                 // STEP 4: Delete old records if not skipped
                 if (!skipDeleteRecords)
@@ -138,8 +138,8 @@ namespace DSD.Inbound.Runners
 
                     // Insert CSV data into database
                     _sqlService.InsertCSV(accessInfo.InitialCatalog, sourceFolder);
-                    //populate DSD_Perm
-                    _sqlService.MergePerm(accessInfo.InitialCatalog);
+                    ////populate DSD_Perm
+                    //_sqlService.MergePerm(accessInfo.InitialCatalog);
                     //Remove Source Data
                     _sqlService.DeleteSingleTableAsync(accessInfo.InitialCatalog, "CISOUT_INVEDYNA");
                     // Move processed CSV files to archive

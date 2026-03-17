@@ -360,7 +360,7 @@ namespace DSD.Common.Services
                 conn.Open(); // ✅ Open once and keep it open
                 Log.Information($"Connected to SQL Database {conn.Database}");
 
-                string[] fileEntries = Directory.GetFiles(filePath);
+                string[] fileEntries = Directory.GetFiles(filePath, "*.csv");
 
                 foreach (string fileEntry in fileEntries)
                 {
@@ -432,54 +432,54 @@ namespace DSD.Common.Services
             }
         }
 
-        public async Task MergePerm(string db)
-        {
-            using (SqlConnection conn = new SqlConnection(CustomerConnectionString(db)))
-            {
-                conn.Open(); // ✅ Open once and keep it open
-                Log.Information($"Connected to SQL Database {conn.Database}");
+        //public async Task MergePerm(string db)
+        //{
+        //    using (SqlConnection conn = new SqlConnection(CustomerConnectionString(db)))
+        //    {
+        //        conn.Open(); // ✅ Open once and keep it open
+        //        Log.Information($"Connected to SQL Database {conn.Database}");
 
-                string mergeSql = @"MERGE dbo.DSD_PERM AS tgt
-                                USING dbo.CISOUT_INVEDYNA AS src
-                                    ON  tgt.CustomerNumber = src.Customer
-                                    AND tgt.ItemNumber     = src.product
-                                    AND tgt.DayofWeek      = src.Day_deliv
+        //        string mergeSql = @"MERGE dbo.DSD_PERM AS tgt
+        //                        USING dbo.CISOUT_INVEDYNA AS src
+        //                            ON  tgt.CustomerNumber = src.Customer
+        //                            AND tgt.ItemNumber     = src.product
+        //                            AND tgt.DayofWeek      = src.Day_deliv
 
-                                WHEN MATCHED
-                                     AND tgt.Quantity <> src.Quantity
-                                    THEN UPDATE
-                                         SET tgt.Quantity = src.Quantity
+        //                        WHEN MATCHED
+        //                             AND tgt.Quantity <> src.Quantity
+        //                            THEN UPDATE
+        //                                 SET tgt.Quantity = src.Quantity
 
-                                WHEN NOT MATCHED BY TARGET
-                                    THEN INSERT (CustomerNumber, ItemNumber, DayofWeek, Quantity)
-                                         VALUES (src.Customer, src.product, src.Day_deliv, src.Quantity);";
+        //                        WHEN NOT MATCHED BY TARGET
+        //                            THEN INSERT (CustomerNumber, ItemNumber, DayofWeek, Quantity)
+        //                                 VALUES (src.Customer, src.product, src.Day_deliv, src.Quantity);";
 
-                //await using var mergeCmd = new SqlCommand(mergeSql, conn);
-                //var rowsAffected = await mergeCmd.ExecuteNonQueryAsync();
-                //Log.Information("Merged {RowsAffected} rows from table DSD_Perm", rowsAffected);
-                using var tx = conn.BeginTransaction();
-                try
-                {
-                    using var cmd = new SqlCommand(mergeSql, conn, tx)
-                    {
-                        CommandType = CommandType.Text,
-                        CommandTimeout = 0 // optional if large volume
-                    };
+        //        //await using var mergeCmd = new SqlCommand(mergeSql, conn);
+        //        //var rowsAffected = await mergeCmd.ExecuteNonQueryAsync();
+        //        //Log.Information("Merged {RowsAffected} rows from table DSD_Perm", rowsAffected);
+        //        using var tx = conn.BeginTransaction();
+        //        try
+        //        {
+        //            using var cmd = new SqlCommand(mergeSql, conn, tx)
+        //            {
+        //                CommandType = CommandType.Text,
+        //                CommandTimeout = 0 // optional if large volume
+        //            };
 
-                    int rowsAffected = cmd.ExecuteNonQuery();
-                    tx.Commit();
-                    Log.Information("Merged {RowsAffected} rows from table DSD_Perm", rowsAffected);
-                }
-                catch(Exception ex)
-                {
-                    Log.Information(ex.Message);
-                    tx.Rollback();
-                    throw;
-                }
+        //            int rowsAffected = cmd.ExecuteNonQuery();
+        //            tx.Commit();
+        //            Log.Information("Merged {RowsAffected} rows from table DSD_Perm", rowsAffected);
+        //        }
+        //        catch(Exception ex)
+        //        {
+        //            Log.Information(ex.Message);
+        //            tx.Rollback();
+        //            throw;
+        //        }
 
 
-            }
-        }
+        //    }
+        //}
 
 
         public async Task<List<string>> GetOutboundTableNamesAsync(string catalog)
