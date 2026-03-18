@@ -26,6 +26,7 @@ namespace DSD.UI.Views
     public partial class LoadCsvView : UserControl
     {
         private readonly SqlService _sqlService;
+        private readonly CsvHelperService _csvHelperService;
         public LoadCsvView()
         {
             InitializeComponent();
@@ -37,7 +38,7 @@ namespace DSD.UI.Views
                         .Build();
 
             _sqlService = new SqlService(config);
-
+            _csvHelperService = new CsvHelperService();
 
         }
 
@@ -73,7 +74,12 @@ namespace DSD.UI.Views
                     .CustomerInfo
                     .Current
                     .InitialCatalog;
-
+            var targetFilepath =
+                ((MainViewModel)DataContext)
+                    .CustomerInfo
+                    .Current
+                    .ftpLocalFilePath;
+            var archiveFilepath = System.IO.Path.Combine(targetFilepath, "archive");
             if (string.IsNullOrWhiteSpace(catalog))
             {
                 StatusTextBlock.Text = "InitialCatalog is empty. Check Customer Info tab.";
@@ -85,11 +91,19 @@ namespace DSD.UI.Views
                 StatusTextBlock.Text = "No CSV files found in the selected folder.";
                 return;
             }
+            var result = MessageBox.Show(
+       $"Insert csvFiles into '{catalog}'?",
+       "Confirm Insert",
+       MessageBoxButton.YesNo,
+       MessageBoxImage.Question);
 
+            if (result != MessageBoxResult.Yes)
+                return;
             await Task.Run(() =>
                     _sqlService.InsertCSV(catalog, filePath));
 
-            StatusTextBlock.Text = "Done.";
+            _csvHelperService.MoveCSVfiles(filePath, archiveFilepath);
+            StatusTextBlock.Text = $"Files were inserted into {catalog} and files were moved to the Archive folder";
 
 
 

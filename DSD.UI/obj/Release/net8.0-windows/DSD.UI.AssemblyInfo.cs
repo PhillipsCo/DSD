@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DSD.UI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+471c20eeed14201ebfc36aefc938c30c3c631b3f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6f83c94316ab67dc034504ec56fa3bf7cfa388cb")]
 [assembly: System.Reflection.AssemblyProductAttribute("DSD.UI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DSD.UI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
