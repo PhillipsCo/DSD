@@ -147,3 +147,9 @@ C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\DailyScheduleView.g.cs
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\DailyScheduleView.baml
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\LoadCsvView.g.cs
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\LoadCsvView.baml
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\DsdLogView.g.cs
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\DsdLogView.baml
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\RunAppView.g.cs
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\Views\RunAppView.baml
+C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\DSD.UI_Content.g.cs
+C:\CIS\Programs\DSD\DSD.UI\bin\Debug\net8.0-windows\DSD.ico

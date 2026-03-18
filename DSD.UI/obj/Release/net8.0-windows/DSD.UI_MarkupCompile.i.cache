@@ -10,11 +10,11 @@ none
 false
 TRACE;RELEASE;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 C:\CIS\Programs\DSD\DSD.UI\App.xaml
-71821101770
+8-464832661
 
-25-784022344
+27-29899992
 272960943907
-MainWindow.xaml;Resources\Resources.xaml;Views\ApiListView.xaml;Views\ApiTesterView.xaml;Views\CustomerInfoView.xaml;Views\DailyScheduleView.xaml;Views\LoadCsvView.xaml;
+MainWindow.xaml;Resources\Resources.xaml;Views\ApiListView.xaml;Views\ApiTesterView.xaml;Views\CustomerInfoView.xaml;Views\DailyScheduleView.xaml;Views\DsdLogView.xaml;Views\LoadCsvView.xaml;
 
-True
+False
 
