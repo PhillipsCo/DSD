@@ -35,7 +35,7 @@ SELECT
     , IsActive
     , RUNGROUP
     , SendCIS
-FROM dbo.DSD_Job_Executablesdev
+FROM dbo.DSD_Job_Executables
 WHERE cust = @cust
 ORDER BY ScheduleTime;";
 
