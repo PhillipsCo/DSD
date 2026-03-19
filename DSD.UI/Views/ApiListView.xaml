@@ -35,6 +35,7 @@ ItemsSource="{Binding ApiList.Items}"
 SelectedItem="{Binding ApiList.SelectedItem, Mode=TwoWay}"
 AutoGenerateColumns="False"
 CanUserAddRows="True"
+                   AlternatingRowBackground="#EEF2F7"
 CanUserDeleteRows="False"
 IsReadOnly="False">
             <DataGrid.Columns>

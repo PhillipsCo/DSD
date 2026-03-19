@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DSD.Inbound")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a853aacd12f662b248d3e6001d9dec4de30bc7d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+66d9e33383e76a6f3a1b7a884a2cccd9a09f8210")]
 [assembly: System.Reflection.AssemblyProductAttribute("DSD.Inbound")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DSD.Inbound")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

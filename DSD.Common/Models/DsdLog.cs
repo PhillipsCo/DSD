@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DSD.UI.Models
+namespace DSD.Common.Models
 {
     public class DsdLog
     {
@@ -19,5 +19,3 @@ namespace DSD.UI.Models
         public string? Status { get; set; }
     }
 }
-
-

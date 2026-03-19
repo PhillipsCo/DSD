@@ -37,6 +37,7 @@
                                   SelectedItem="{Binding DailySchedule.SelectedItem, Mode=TwoWay}"
                                   AutoGenerateColumns="True"
                                   CanUserAddRows="False"
+                   AlternatingRowBackground="#EEF2F7"
                                   IsReadOnly="False"/>
     </Grid>
 </UserControl>

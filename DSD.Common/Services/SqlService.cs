@@ -41,7 +41,7 @@ namespace DSD.Common.Services
             int RowsAffected,
             string? ErrorMessage = null
         );
-
+        
         public async Task<List<CustomerRow>> GetCustomersAsync()
         {
             const string sql = "select id, customer, InitialCatalog  from DSD_CUSTOMERINFO order by customer";
