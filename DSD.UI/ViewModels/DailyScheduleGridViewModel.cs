@@ -33,6 +33,8 @@ public class DailyScheduleGridViewModel : INotifyPropertyChanged
     // 0) Database constants
     // =========================================================
     private const string TableName = "dbo.DSD_Job_Executables";
+    private const string ChildTableName = "dbo.DSD_Job_Log";
+
     private const string PrimaryKeyColumn = "jobId";
     private const string ConnectionStringName = "CustomerConnectionDB";
 
@@ -274,16 +276,27 @@ WHERE {PrimaryKeyColumn}=@Id;";
 
     private async Task DeleteRowInDatabaseAsync(DailyScheduleRow row)
     {
-        string sql = $@"
-DELETE FROM {TableName}
+
+        string sqlChild = $@"
+DELETE FROM {ChildTableName}
 WHERE {PrimaryKeyColumn} = @Id;";
 
         using var conn = new SqlConnection(GetConnectionString());
-        using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", row.jobId);
+        using var cmd = new SqlCommand(sqlChild, conn);
+        cmd.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = row.jobId;
 
         await conn.OpenAsync();
         await cmd.ExecuteNonQueryAsync();
+
+        string sqlParent = $@"
+DELETE FROM {TableName}
+WHERE {PrimaryKeyColumn} = @Id;";
+
+        using var cmd1 = new SqlCommand(sqlParent, conn);
+        cmd1.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = row.jobId;
+
+        await cmd1.ExecuteNonQueryAsync();
+
     }
 
     private async Task ReloadAndReselectAsync(int id)

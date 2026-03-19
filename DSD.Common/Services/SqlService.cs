@@ -541,59 +541,112 @@ namespace DSD.Common.Services
 
             }
 
-            public async Task ScheduleJobsAsync(  int dayOfWeekInt, string dateValue)
+        //public async Task ScheduleJobsAsync(  int dayOfWeekInt, string dateValue)
+        //{
+        //    try
+        //    {
+        //        Log.Information("Starting job scheduling for   DayOfWeek: {DayOfWeek}, DateValue: {DateValue}",
+        //              dayOfWeekInt, dateValue);
+
+        //        using (var connection = new SqlConnection(_config.GetConnectionString("CustomerConnectionDB")))
+        //        {
+        //            await connection.OpenAsync();
+        //            Log.Information("SQL connection established successfully.");
+
+        //        //string query = _config["SQL"];
+
+
+
+        //            using (var command = new SqlCommand("dbo.Insert_DSD_Job_Log", connection))
+        //            {
+
+
+        //            command.Parameters.Add("@DateValue", SqlDbType.Date)
+        //                          .Value = dateValue;
+
+        //            command.Parameters.Add("@DayOfWeekInt", SqlDbType.Int)
+        //                          .Value = dayOfWeekInt;
+
+
+
+        //            int rowsAffected = await command.ExecuteNonQueryAsync();
+
+        //                if (rowsAffected > 0)
+        //                {
+        //                    Log.Information("Job successfully scheduled {rowsAffected} jobs for {dateValue}.", dateValue , rowsAffected);
+        //                }
+        //                else
+        //                {
+        //                    Log.Warning("No rows were inserted for {dateValue}.", dateValue);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (SqlException ex)
+        //    {
+        //        Log.Error(ex, "SQL error occurred while scheduling jobs.");
+        //        throw; // Optionally rethrow or handle gracefully
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        Log.Error(ex, "Database connection error occurred.");
+        //        throw;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error(ex, "An unexpected error occurred while inserting scheduling data.");
+        //        throw;
+        //    }
+        //}
+        public async Task ScheduleJobsAsync(int dayOfWeekInt, string dateValue)
+        {
+            try
             {
-                try
+                Log.Information("Starting job scheduling for DayOfWeek: {DayOfWeek}, DateValue: {DateValue}",
+                                dayOfWeekInt, dateValue);
+
+                // Parse once, pass as Date (prevents culture/format problems)
+                var date = DateTime.Parse(dateValue).Date;
+
+                using var connection = new SqlConnection(_config.GetConnectionString("CustomerConnectionDB"));
+                await connection.OpenAsync();
+                Log.Information("SQL connection established successfully.");
+
+                using var command = new SqlCommand("dbo.Insert_DSD_Job_Log", connection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.Add("@DateValue", SqlDbType.Date).Value = date;
+                command.Parameters.Add("@DayOfWeekInt", SqlDbType.Int).Value = dayOfWeekInt;
+
+                int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                if (rowsAffected > 0)
                 {
-                    Log.Information("Starting job scheduling for   DayOfWeek: {DayOfWeek}, DateValue: {DateValue}",
-                          dayOfWeekInt, dateValue);
-
-                    using (var connection = new SqlConnection(_config.GetConnectionString("CustomerConnectionDB")))
-                    {
-                        await connection.OpenAsync();
-                        Log.Information("SQL connection established successfully.");
-
-                    string query = _config["SQL"];
-                        
-
-
-                        using (var command = new SqlCommand(query, connection))
-                        {
-                             
-                            command.Parameters.AddWithValue("@DayOfWeekInt", dayOfWeekInt);
-                            command.Parameters.AddWithValue("@DateValue", dateValue);
-                          
-
-                            int rowsAffected = await command.ExecuteNonQueryAsync();
-
-                            if (rowsAffected > 0)
-                            {
-                                Log.Information("Job successfully scheduled {rowsAffected} jobs for {dateValue}.", dateValue , rowsAffected);
-                            }
-                            else
-                            {
-                                Log.Warning("No rows were inserted for {dateValue}.", dateValue);
-                            }
-                        }
-                    }
+                    Log.Information("Job successfully scheduled {RowsAffected} jobs for {DateValue}.",
+                                    rowsAffected, dateValue);
                 }
-                catch (SqlException ex)
+                else
                 {
-                    Log.Error(ex, "SQL error occurred while scheduling jobs.");
-                    throw; // Optionally rethrow or handle gracefully
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Log.Error(ex, "Database connection error occurred.");
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "An unexpected error occurred while inserting scheduling data.");
-                    throw;
+                    Log.Warning("No rows were inserted for {DateValue}.", dateValue);
                 }
             }
+            catch (SqlException ex)
+            {
+                Log.Error(ex, "SQL error occurred while scheduling jobs.");
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Log.Error(ex, "Database connection error occurred.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "An unexpected error occurred while inserting scheduling data.");
+                throw;
+            }
         }
+    }
     }
 
 

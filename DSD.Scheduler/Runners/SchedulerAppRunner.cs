@@ -1,6 +1,7 @@
 ﻿using DSD.Common.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Graph.Models;
+using Microsoft.Graph.Models.ExternalConnectors;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,10 @@ namespace DSD.Scheduler.Runners
         {
             Log.Information("Starting Scheduler");
             DateTime today = DateTime.Today;
-            for (int i = 1; i <= 4; i++)
+            int start = _configuration.GetValue<int>("StartDay");
+            for (int i = start; i <= 4; i++)
             {
-
+                 
                 DateTime futureDate = today.AddDays(i);
                 int dayOfWeekInt = ((int)futureDate.DayOfWeek + 1); // Sunday = 1
                 string dateValue = futureDate.ToString("yyyy-MM-dd");
