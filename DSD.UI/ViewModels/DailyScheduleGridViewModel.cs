@@ -32,7 +32,7 @@ public class DailyScheduleGridViewModel : INotifyPropertyChanged
     // =========================================================
     // 0) Database constants
     // =========================================================
-    private const string TableName = "dbo.DSD_Job_Executablesdev";
+    private const string TableName = "dbo.DSD_Job_Executables";
     private const string PrimaryKeyColumn = "jobId";
     private const string ConnectionStringName = "CustomerConnectionDB";
 
