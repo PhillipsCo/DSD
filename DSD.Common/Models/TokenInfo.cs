@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DSD.Common.Models
 {
-    internal class TokenInfo
+    public class TokenInfo
     {
         public string? token_type { get; set; }
         public string? expires_in { get; set; }

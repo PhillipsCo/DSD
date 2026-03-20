@@ -1,28 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DSD.Common.Models;
+using DSD.Common.Services;
+using DSD.UI.ViewModels;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Graph.Models;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DSD.UI.Views
 {
-    /// <summary>
-    /// Interaction logic for ApiTesterView.xaml
-    /// </summary>
     public partial class ApiTesterView : UserControl
     {
+
         public ApiTesterView()
         {
             InitializeComponent();
         }
+
+        public ApiTesterView(ApiTesterViewModel viewModel) : this()
+        {
+            DataContext = viewModel;
+        }
+
+
+
     }
+
+
 }
+

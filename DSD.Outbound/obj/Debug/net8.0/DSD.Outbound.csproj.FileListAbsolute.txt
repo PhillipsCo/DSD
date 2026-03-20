@@ -120,3 +120,5 @@ C:\CIS\PROGRAMS\DSD\DSD.Outbound\bin\Debug\net8.0\Microsoft.Kiota.Serialization.
 C:\CIS\PROGRAMS\DSD\DSD.Outbound\bin\Debug\net8.0\Microsoft.Kiota.Serialization.Text.dll
 C:\CIS\PROGRAMS\DSD\DSD.Outbound\bin\Debug\net8.0\Std.UriTemplate.dll
 C:\CIS\Programs\DSD\DSD.Outbound\obj\Debug\net8.0\DSD.Outbound.sourcelink.json
+C:\CIS\Programs\DSD\DSD.Outbound\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\CIS\Programs\DSD\DSD.Outbound\bin\Debug\net8.0\RestSharp.dll

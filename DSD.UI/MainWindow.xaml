@@ -84,9 +84,10 @@
                 <TabItem Header="API List">
                     <views:ApiListView />
                 </TabItem>
-                <TabItem Header="API Tester">
-                    <views:ApiTesterView />
-                </TabItem>
+
+                <TabItem Header="API Tester"
+         x:Name="ApiTesterTab" />
+
                 <!-- TAB 5: Customer Info -->
                 <TabItem Header="Customer Info">
                     <views:CustomerInfoView />

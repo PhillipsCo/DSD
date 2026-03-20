@@ -153,3 +153,5 @@ C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\refint\DSD.UI.dll
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\DSD.UI.pdb
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\DSD.UI.genruntimeconfig.cache
 C:\CIS\Programs\DSD\DSD.UI\obj\Debug\net8.0-windows\ref\DSD.UI.dll
+C:\CIS\Programs\DSD\DSD.UI\bin\Debug\net8.0-windows\Newtonsoft.Json.dll
+C:\CIS\Programs\DSD\DSD.UI\bin\Debug\net8.0-windows\RestSharp.dll

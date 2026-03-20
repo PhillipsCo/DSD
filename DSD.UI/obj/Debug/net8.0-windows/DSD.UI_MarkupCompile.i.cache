@@ -12,9 +12,9 @@ TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR
 C:\CIS\Programs\DSD\DSD.UI\App.xaml
 91436378116
 11567150974
-27-276205199
-2721297687276
+281066665220
+274-705294060
 MainWindow.xaml;Resources\Resources.xaml;Views\ApiListView.xaml;Views\ApiTesterView.xaml;Views\CustomerInfoView.xaml;Views\DailyScheduleView.xaml;Views\DsdLogView.xaml;Views\LoadCsvView.xaml;Views\RunAppView.xaml;
 
-True
+False
 

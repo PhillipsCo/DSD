@@ -1,8 +1,6 @@
 ﻿using DSD.Common.Models;
 using DSD.Common.Services;
-using DSD.UI.ViewModels;        // Child tab ViewModels
 using Microsoft.Extensions.Configuration;
-
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -19,44 +17,28 @@ namespace DSD.UI.ViewModels;
 /// MainViewModel
 /// =============
 ///
-/// This ViewModel is the APPLICATION SHELL / COORDINATOR.
+/// APPLICATION SHELL / COORDINATOR
 ///
-/// DESIGN PHILOSOPHY:
-/// ------------------
 /// ✅ Owns GLOBAL UI STATE shared across tabs
 /// ✅ Creates and wires CHILD TAB VIEWMODELS
-/// ✅ Propagates customer/direction/table context to child tabs
-/// ✅ Owns the top-level "Run" command
+/// ✅ Propagates customer/direction/table context
 ///
-/// ❌ Does NOT contain tab-specific SQL
-/// ❌ Does NOT perform CRUD directly
-/// ❌ Does NOT own DataGrids
-///
-/// Each tab ViewModel:
-/// - Owns its own data
-/// - Owns its own repositories
-/// - Owns its own CRUD commands
+/// ❌ Does NOT do CRUD
+/// ❌ Does NOT call APIs directly
 /// </summary>
 public class MainViewModel : INotifyPropertyChanged
 {
     // =========================================================
-    // 1) SHARED SERVICES / DEPENDENCIES
+    // 1) SHARED SERVICES
     // =========================================================
 
     private readonly IConfiguration _config;
     private readonly ISqlService _sqlService;
 
     // =========================================================
-    // 2) CHILD TAB VIEWMODELS (ONE PER TAB)
+    // 2) CHILD TAB VIEWMODELS
     // =========================================================
-    //
-    // These are created ONCE and live for the lifetime of the app.
-    // Context (customer, table, direction) is pushed into them.
-    //
 
-    /// <summary>
-    /// Admin → Daily Schedule tab
-    /// </summary>
     public DailyScheduleGridViewModel DailySchedule { get; }
 
     /// <summary>
@@ -65,18 +47,17 @@ public class MainViewModel : INotifyPropertyChanged
     public CustomerInfoViewModel CustomerInfo { get; }
 
     /// <summary>
-    /// Admin → API List tab
-    /// Backed by DSD_API_LIST
+    /// ✅ ALIAS REQUIRED BY ApiTester wiring
+    /// Exposes the SAME instance under the expected name.
     /// </summary>
+    public CustomerInfoViewModel CustomerInfoViewModel => CustomerInfo;
+
     public ApiListGridViewModel ApiList { get; }
 
     // =========================================================
-    // 3) GLOBAL COMMANDS (OWNED BY SHELL)
+    // 3) GLOBAL COMMANDS
     // =========================================================
 
-    /// <summary>
-    /// Launches inbound/outbound executable
-    /// </summary>
     public ICommand RunCommand { get; }
 
     // =========================================================
@@ -89,13 +70,16 @@ public class MainViewModel : INotifyPropertyChanged
         _config = config;
 
         // -----------------------------------------------------
-        // Create child ViewModels
+        // Create child ViewModels ONCE
         // -----------------------------------------------------
 
         DailySchedule = new DailyScheduleGridViewModel(_config);
         CustomerInfo = new CustomerInfoViewModel(_config);
         ApiList = new ApiListGridViewModel(_config);
+
+        // React to CustomerInfo loading
         CustomerInfo.PropertyChanged += CustomerInfo_PropertyChanged;
+
         // -----------------------------------------------------
         // Default global UI state
         // -----------------------------------------------------
@@ -118,26 +102,9 @@ public class MainViewModel : INotifyPropertyChanged
     // =========================================================
 
     public ObservableCollection<CustomerRow> Customers { get; } = new();
-    private void CustomerInfo_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        // We only care when the CustomerInfo row is loaded or replaced
-        if (e.PropertyName != nameof(CustomerInfoViewModel.Current))
-            return;
 
-        var catalog = CustomerInfo.Current?.InitialCatalog;
-
-        System.Diagnostics.Debug.WriteLine(
-            $"[MainVM] CustomerInfo.Current changed. InitialCatalog = '{catalog}'");
-
-        // Push the correct DB catalog into the API List tab
-        ApiList.SetInitialCatalog(catalog);
-    }
     private CustomerRow? _selectedCustomer;
 
-    /// <summary>
-    /// Currently selected customer.
-    /// Changing this reloads ALL tabs.
-    /// </summary>
     public CustomerRow? SelectedCustomer
     {
         get => _selectedCustomer;
@@ -150,19 +117,13 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
             OnPropertyChanged(nameof(SelectedCustomerId));
 
-            // Push customer context to all child tabs
             PropagateCustomerContext(value);
-
-            // Direction + customer determines available table options
             _ = LoadTableOptionsAsync();
         }
     }
 
     public int? SelectedCustomerId => SelectedCustomer?.Id;
 
-    /// <summary>
-    /// Initial load of customers at app startup
-    /// </summary>
     public async Task LoadCustomersAsync()
     {
         var rows = await _sqlService.GetCustomersAsync();
@@ -171,15 +132,10 @@ public class MainViewModel : INotifyPropertyChanged
         foreach (var row in rows)
             Customers.Add(row);
 
-        // Auto-select first customer to initialize UI
         if (Customers.Count > 0)
             SelectedCustomer = Customers[0];
     }
 
-    /// <summary>
-    /// Pushes customer context into each child tab.
-    /// Centralized to keep setters clean.
-    /// </summary>
     private void PropagateCustomerContext(CustomerRow? customer)
     {
         DailySchedule.SetCustomer(customer);
@@ -188,7 +144,24 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
     // =========================================================
-    // 6) DIRECTION (INBOUND / OUTBOUND)
+    // 6) CUSTOMER INFO → API LIST LINK
+    // =========================================================
+
+    private void CustomerInfo_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(CustomerInfoViewModel.Current))
+            return;
+
+        var catalog = CustomerInfo.Current?.InitialCatalog;
+
+        Debug.WriteLine(
+            $"[MainVM] CustomerInfo.Current changed. InitialCatalog = '{catalog}'");
+
+        ApiList.SetInitialCatalog(catalog);
+    }
+
+    // =========================================================
+    // 7) DIRECTION
     // =========================================================
 
     public ObservableCollection<string> Directions { get; }
@@ -208,7 +181,6 @@ public class MainViewModel : INotifyPropertyChanged
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsOutbound));
 
-            // Direction impacts outbound table options
             _ = LoadTableOptionsAsync();
         }
     }
@@ -216,17 +188,13 @@ public class MainViewModel : INotifyPropertyChanged
     public bool IsOutbound => SelectedDirection == "Outbound";
 
     // =========================================================
-    // 7) TABLE / GROUP OPTIONS (OUTBOUND)
+    // 8) TABLE OPTIONS
     // =========================================================
 
     public ObservableCollection<string> TableOptions { get; } = new();
 
     private string? _selectedTableOption;
 
-    /// <summary>
-    /// Selected table or group (ALL or specific value).
-    /// This drives API list filtering and run behavior.
-    /// </summary>
     public string? SelectedTableOption
     {
         get => _selectedTableOption;
@@ -238,15 +206,10 @@ public class MainViewModel : INotifyPropertyChanged
             _selectedTableOption = value;
             OnPropertyChanged();
 
-            // Keep API List tab in sync
             ApiList.SetTableOption(value);
         }
     }
 
-    /// <summary>
-    /// Loads available outbound tables/groups.
-    /// Always includes ALL.
-    /// </summary>
     private async Task LoadTableOptionsAsync()
     {
         TableOptions.Clear();
@@ -267,12 +230,11 @@ public class MainViewModel : INotifyPropertyChanged
             }
         }
 
-        // Default selection after reload
         SelectedTableOption = "ALL";
     }
 
     // =========================================================
-    // 8) SEND TO CIS FLAG
+    // 9) SEND TO CIS
     // =========================================================
 
     private bool _sendToCis;
@@ -289,15 +251,13 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
     // =========================================================
-    // 9) RUN COMMAND
+    // 10) RUN COMMAND
     // =========================================================
 
-    private bool CanRun()
-    {
-        return SelectedCustomer != null
-            && !string.IsNullOrWhiteSpace(SelectedDirection)
-            && !string.IsNullOrWhiteSpace(SelectedTableOption);
-    }
+    private bool CanRun() =>
+        SelectedCustomer != null
+        && !string.IsNullOrWhiteSpace(SelectedDirection)
+        && !string.IsNullOrWhiteSpace(SelectedTableOption);
 
     private void Run()
     {
@@ -307,9 +267,7 @@ $@"You are about to run:
 Direction: {SelectedDirection}
 Customer: {SelectedCustomer?.Customer}
 Group / Table: {SelectedTableOption}
-Send to CIS: {(SendToCis ? "Yes" : "No")}
-
-Do you want to continue?";
+Send to CIS: {(SendToCis ? "Yes" : "No")}";
 
         if (MessageBox.Show(
                 message,
@@ -338,7 +296,8 @@ Do you want to continue?";
             return;
         }
 
-        var args = $"{SelectedCustomer?.Customer} {SelectedTableOption} {(SendToCis ? "Y" : "N")}";
+        var args =
+            $"{SelectedCustomer?.Customer} {SelectedTableOption} {(SendToCis ? "Y" : "N")}";
 
         Process.Start(new ProcessStartInfo
         {
@@ -351,7 +310,7 @@ Do you want to continue?";
     }
 
     // =========================================================
-    // 10) INotifyPropertyChanged
+    // 11) INotifyPropertyChanged
     // =========================================================
 
     public event PropertyChangedEventHandler? PropertyChanged;

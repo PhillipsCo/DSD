@@ -86,9 +86,17 @@
               "target": "Package",
               "version": "[5.100.0, )"
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.4, )"
+            },
             "Polly": {
               "target": "Package",
               "version": "[8.6.5, )"
+            },
+            "RestSharp": {
+              "target": "Package",
+              "version": "[114.0.0, )"
             },
             "SSH.NET": {
               "target": "Package",

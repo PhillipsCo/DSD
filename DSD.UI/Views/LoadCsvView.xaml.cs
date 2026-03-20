@@ -79,7 +79,7 @@ namespace DSD.UI.Views
                     .CustomerInfo
                     .Current
                     .ftpLocalFilePath;
-            var archiveFilepath = System.IO.Path.Combine(targetFilepath, "archive");
+            var archiveFilepath = System.IO.Path.Combine(targetFilepath,"Inbound", "archive");
             if (string.IsNullOrWhiteSpace(catalog))
             {
                 StatusTextBlock.Text = "InitialCatalog is empty. Check Customer Info tab.";
