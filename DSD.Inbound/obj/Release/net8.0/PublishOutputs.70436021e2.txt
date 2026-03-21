@@ -1,5 +1,4 @@
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\DSD.Inbound.exe
-C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\appsettings.json
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\DSD.Inbound.dll
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\DSD.Inbound.deps.json
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\DSD.Inbound.runtimeconfig.json
@@ -63,8 +62,10 @@ C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Microsoft.Kiota.Seria
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Microsoft.Kiota.Serialization.Multipart.dll
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Microsoft.Kiota.Serialization.Text.dll
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Microsoft.SqlServer.Server.dll
+C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Newtonsoft.Json.dll
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Polly.dll
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Polly.Core.dll
+C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\RestSharp.dll
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Serilog.dll
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Serilog.Extensions.Hosting.dll
 C:\CIS\Programs\DSD\DSD.Inbound\bin\Release\net8.0\publish\Serilog.Extensions.Logging.dll

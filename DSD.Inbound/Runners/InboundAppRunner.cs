@@ -141,7 +141,7 @@ namespace DSD.Inbound.Runners
                     ////populate DSD_Perm
                     //_sqlService.MergePerm(accessInfo.InitialCatalog);
                     //Remove Source Data
-                    _sqlService.DeleteSingleTableAsync(accessInfo.InitialCatalog, "CISOUT_INVEDYNA");
+                    //_sqlService.DeleteSingleTableAsync(accessInfo.InitialCatalog, "CISOUT_INVEDYNA");
                     // Move processed CSV files to archive
                     _csvHelperService.MoveCSVfiles(sourceFolder, destinationFolder);
                     
