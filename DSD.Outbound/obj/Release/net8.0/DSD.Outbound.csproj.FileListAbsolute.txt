@@ -120,3 +120,5 @@ C:\CIS\Programs\DSD\DSD.Outbound\obj\Release\net8.0\refint\DSD.Outbound.dll
 C:\CIS\Programs\DSD\DSD.Outbound\obj\Release\net8.0\DSD.Outbound.pdb
 C:\CIS\Programs\DSD\DSD.Outbound\obj\Release\net8.0\DSD.Outbound.genruntimeconfig.cache
 C:\CIS\Programs\DSD\DSD.Outbound\obj\Release\net8.0\ref\DSD.Outbound.dll
+C:\CIS\Programs\DSD\DSD.Outbound\bin\Release\net8.0\Newtonsoft.Json.dll
+C:\CIS\Programs\DSD\DSD.Outbound\bin\Release\net8.0\RestSharp.dll

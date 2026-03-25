@@ -66,6 +66,81 @@ namespace DSD.Common.Services
 
             return list;
         }
+        //public async Task<int> SqlCountAsync(string databaseName, string tableName)
+        //{ try
+        //    {
+        //        var count = 0;
+        //        var connectionString = CustomerConnectionString(databaseName);
+
+        //        await using var conn = new SqlConnection(connectionString);
+        //        await conn.OpenAsync();
+
+        //        var sql = $@"
+        //    IF OBJECT_ID(@fullTableName, 'U') IS NULL
+        //        SELECT 0
+        //    ELSE
+        //        EXEC('SELECT COUNT(*) FROM ' + @fullTableName);
+        //";
+
+        //        var fullTableName = $"dbo.{tableName}";
+
+        //        await using (var cmd = new SqlCommand(sql, conn))
+        //        {
+        //            cmd.Parameters.AddWithValue("@fullTableName", fullTableName); ;
+        //            var exists = (int)await cmd.ExecuteScalarAsync();
+        //            if (exists == 0)
+        //            {
+        //                Log.Warning("Table {TableName} does not exist or is not a base table.", tableName);
+        //                return exists;
+        //            }
+        //            else
+        //            {
+        //                count = exists;
+        //            }
+        //        }
+        //        return count;
+        //    }
+
+        //    catch (SqlException ex)
+        //    {
+        //        Log.Error(ex, "SQL error counting rows for table {TableName} in database {Database}",
+        //            tableName, databaseName);
+        //        throw; // let caller decide how to handle failure
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error(ex, "Unexpected error in SqlCountAsync");
+        //        throw;
+        //    }
+
+        //}
+        public async Task<int> SqlCountAsync(string databaseName, string objectName)
+        {
+            try
+            {
+                var connectionString = CustomerConnectionString(databaseName);
+
+                await using var conn = new SqlConnection(connectionString);
+                await conn.OpenAsync();
+
+                var sql = $@"
+            IF OBJECT_ID(N'dbo.[{objectName}]') IS NULL
+                SELECT 0
+            ELSE
+                SELECT COUNT(*) FROM dbo.[{objectName}];
+        ";
+
+                await using var cmd = new SqlCommand(sql, conn);
+                return (int)await cmd.ExecuteScalarAsync();
+            }
+            catch (SqlException ex)
+            {
+                Log.Error(ex,
+                    "SQL error counting rows for table/view {ObjectName} in database {Database}",
+                    objectName, databaseName);
+                throw;
+            }
+        }
         public async Task DeleteSingleTableAsync(string databaseName, string tableName)
         {
             var connectionString = CustomerConnectionString(databaseName);

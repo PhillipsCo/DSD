@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DSD.SqlCount": {
+      "commandName": "Project",
+      "commandLineArgs": "DEMOTEST RouteSalesOrderStaging"
+    }
+  }
+}

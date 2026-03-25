@@ -16,5 +16,5 @@ C:\CIS\Programs\DSD\DSD.UI\App.xaml
 274-705294060
 MainWindow.xaml;Resources\Resources.xaml;Views\ApiListView.xaml;Views\ApiTesterView.xaml;Views\CustomerInfoView.xaml;Views\DailyScheduleView.xaml;Views\DsdLogView.xaml;Views\LoadCsvView.xaml;Views\RunAppView.xaml;
 
-True
+False
 

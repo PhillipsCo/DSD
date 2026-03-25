@@ -129,7 +129,7 @@ namespace DSD.Common.Services
                 }
 
                 // Append your original provided HTML content
-                bodyBuilder.Append(content);
+                bodyBuilder.Append(PlainTextToHtml(content));
                 var finalHtmlBody = bodyBuilder.ToString();
 
                 var message = new Microsoft.Graph.Models.Message
@@ -195,6 +195,19 @@ namespace DSD.Common.Services
         /// Reads the tail of the file and yields ONLY the first line of each entry
         /// whose level != "INF". Continuation lines are ignored.
         /// </summary>
+        /// 
+
+        private static string PlainTextToHtml(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return string.Empty;
+
+            // HTML-encode first, then convert line breaks
+            return System.Net.WebUtility.HtmlEncode(text)
+                .Replace("\r\n", "<br/>")
+                .Replace("\n", "<br/>");
+        }
+
         private static IEnumerable<string> ReadTailAndYieldNonInfEntryHeaders(string path, long maxTailBytes, int maxLines)
         {
             var fi = new FileInfo(path);

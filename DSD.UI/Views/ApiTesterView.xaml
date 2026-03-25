@@ -6,6 +6,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -14,31 +15,98 @@
                 Content="Get Access Token"
                 Width="160"
                 Margin="0,0,0,12"
-                Command="{Binding GetTokenCommand}"
-                 />
+                Command="{Binding GetTokenCommand}" />
 
-        <!-- Expires -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
-            <TextBlock Text="Expires:"
+        <!-- Expires + Endpoint (NO OVERLAP) -->
+
+        <Grid Grid.Row="1" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <!-- Expires label -->
+                <ColumnDefinition Width="220"/>
+                <!-- Expires textbox -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Endpoint label -->
+                <ColumnDefinition Width="220"/>
+                <!-- Endpoint combo -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Execute API button -->
+            </Grid.ColumnDefinitions>
+
+
+            <!-- Expires -->
+            <TextBlock Grid.Column="0"
+                       Text="Expires:"
                        VerticalAlignment="Center"
                        Margin="0,0,8,0"/>
 
+            <TextBox Grid.Column="1"
+                     Width="220"                  
+                     Height="26"
+                    Padding="6,2"
+                     IsReadOnly="True"
+                     Text="{Binding ExpiresAtDisplay, Mode=OneWay}" />
 
-            <TextBox
-    Width="220"
-    IsReadOnly="True"
-    Text="{Binding ExpiresAtDisplay,Mode=OneWay}" />
+            <!-- Endpoint (extra space between fields) -->
+            <TextBlock Grid.Column="2"
+                       Text="Endpoint:"
+                       VerticalAlignment="Center"
+                       Margin="24,0,8,0"/>
 
-        </StackPanel>
+            <ComboBox Grid.Column="3"                      
+                      Height="26"
+                      Padding="6,2"
+                      Width="220"
+                      ItemsSource="{Binding Endpoints}"
+                      SelectedItem="{Binding SelectedEndpoint, Mode=TwoWay}" />
+
+            <!-- Execute API button next to endpoint combo -->
+            <Button Grid.Column="4"
+            Content="Execute API"
+            Height="26"
+            Margin="12,0,0,0"
+            Padding="12,0"
+            VerticalAlignment="Center"
+            Command="{Binding ExecuteApiCommand}" />
+
+        </Grid>
+
+        <!-- Enpoint textbox below Expires row -->
+        <Grid Grid.Row="2" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="Enpoint:"
+                       VerticalAlignment="Center"
+                       Margin="0,0,8,0"/>
+
+            <TextBox Grid.Column="1"
+                     Height="26"
+                     Padding="6,2"
+                     MinWidth="200"
+                     Text="{Binding EndpointText, Mode=TwoWay}" />
+        </Grid>
 
         <!-- Access Token (long) -->
-        <StackPanel Grid.Row="2">
-            <TextBlock Text="Access Token:" Margin="0,0,0,4"/>
-            <TextBox Text="{Binding Token.access_token}"
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Text="Access Token:"
+                       Margin="0,0,0,4"/>
+
+            <TextBox Grid.Row="1"
+                     Text="{Binding Token.access_token}"
                      AcceptsReturn="True"
                      TextWrapping="Wrap"
                      VerticalScrollBarVisibility="Auto"
                      IsReadOnly="True"/>
-        </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
