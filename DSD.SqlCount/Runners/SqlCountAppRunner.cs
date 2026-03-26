@@ -133,7 +133,7 @@ namespace DSD.SqlCount.Runners
                 "Hello,\r\n\r\n" +
                 "We’ve successfully received your order data.\r\n\r\n" +
                 "Summary:\r\n" +
-                $"- Total records received: {countText}\r\n" +
+                $"- Total records available: {countText}\r\n" +
                 $"- Date processed: {DateTime.Now:MMMM dd, yyyy}\r\n\r\n" +
                 "No action is required on your part.\r\n\r\n" +
                 "If you have any questions, please contact our support team.\r\n\r\n" +
