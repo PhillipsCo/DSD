@@ -121,6 +121,9 @@ namespace DSD.Common.Services
                 var connectionString = CustomerConnectionString(databaseName);
 
                 await using var conn = new SqlConnection(connectionString);
+
+                
+
                 await conn.OpenAsync();
 
                 var sql = $@"
@@ -131,6 +134,9 @@ namespace DSD.Common.Services
         ";
 
                 await using var cmd = new SqlCommand(sql, conn);
+                cmd.CommandTimeout = 120;
+                
+
                 return (int)await cmd.ExecuteScalarAsync();
             }
             catch (SqlException ex)
