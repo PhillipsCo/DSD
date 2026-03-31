@@ -165,7 +165,7 @@ public class MainViewModel : INotifyPropertyChanged
     // =========================================================
 
     public ObservableCollection<string> Directions { get; }
-        = new() { "Inbound", "Outbound" };
+        = new() { "Inbound", "Outbound","ExportOneCsv" };
 
     private string _selectedDirection;
 
@@ -213,24 +213,63 @@ public class MainViewModel : INotifyPropertyChanged
     private async Task LoadTableOptionsAsync()
     {
         TableOptions.Clear();
-        TableOptions.Add("ALL");
-
-        if (IsOutbound
-            && SelectedCustomer is not null
-            && !string.IsNullOrWhiteSpace(SelectedCustomer.InitialCatalog))
+        if (SelectedDirection == "Outbound")
         {
-            var tables = await _sqlService.GetOutboundTableNamesAsync(
-                SelectedCustomer.InitialCatalog);
-
-            foreach (var t in tables)
-            {
-                if (string.IsNullOrWhiteSpace(t)) continue;
-                if (string.Equals(t, "ALL", StringComparison.OrdinalIgnoreCase)) continue;
-                if (!TableOptions.Contains(t)) TableOptions.Add(t);
-            }
+            TableOptions.Add("ALL");
+        }
+        if (SelectedCustomer is null ||
+    string.IsNullOrWhiteSpace(SelectedCustomer.InitialCatalog))
+        {
+            SelectedTableOption = "ALL";
+            return;
         }
 
-        SelectedTableOption = "ALL";
+        IEnumerable<string>? items = null;
+
+        if (SelectedDirection == "Outbound")
+        {
+            items = await _sqlService.GetOutboundTableNamesAsync(
+                SelectedCustomer.InitialCatalog);
+        }
+        else if (SelectedDirection == "ExportOneCsv")
+        {
+            items = await _sqlService.GetCsvNamesAsync(
+                SelectedCustomer.InitialCatalog);
+        }
+
+        if (items != null)
+        {
+            foreach (var item in items)
+            {
+                if (string.IsNullOrWhiteSpace(item)) continue;
+                if (string.Equals(item, "ALL", StringComparison.OrdinalIgnoreCase)) continue;
+                if (!TableOptions.Contains(item)) TableOptions.Add(item);
+            }
+        }
+        if (SelectedDirection == "Outbound")
+        {
+            SelectedTableOption = "ALL";
+        }
+        else
+        {
+            SelectedTableOption = TableOptions.First();
+        }
+        //if (IsOutbound
+        //    && SelectedCustomer is not null
+        //    && !string.IsNullOrWhiteSpace(SelectedCustomer.InitialCatalog))
+        //{
+        //    var tables = await _sqlService.GetOutboundTableNamesAsync(
+        //        SelectedCustomer.InitialCatalog);
+
+        //    foreach (var t in tables)
+        //    {
+        //        if (string.IsNullOrWhiteSpace(t)) continue;
+        //        if (string.Equals(t, "ALL", StringComparison.OrdinalIgnoreCase)) continue;
+        //        if (!TableOptions.Contains(t)) TableOptions.Add(t);
+        //    }
+        //}
+
+        //SelectedTableOption = "ALL";
     }
 
     // =========================================================

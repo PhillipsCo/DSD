@@ -588,7 +588,32 @@ namespace DSD.Common.Services
 
             return results;
         }
+        public async Task<List<string>> GetCsvNamesAsync(string catalog)
+        {
+            const string sql = @"
+        SELECT name
+        FROM sys.views
+        WHERE name like 'CIS_%'
+        ORDER BY NAME;";
 
+            var results = new List<string>();
+
+            // Use the DB where DSD_API_LIST lives
+            var connectionString = CustomerConnectionString(catalog);
+
+            await using var conn = new SqlConnection(connectionString);
+            await conn.OpenAsync();
+
+            await using var cmd = new SqlCommand(sql, conn);
+            await using var rdr = await cmd.ExecuteReaderAsync();
+
+            while (await rdr.ReadAsync())
+            {
+                results.Add(rdr.GetString(0));
+            }
+
+            return results;
+        }
         string CustomerConnectionString(string catalog)
             {
                 string connectionString = _config.GetConnectionString("CustomerConnectionDB")

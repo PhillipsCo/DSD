@@ -28,9 +28,22 @@
               Width="280"
               Margin="0,0,0,12"/>
 
-            <TextBlock Text="TABLE / GROUP"
-               FontWeight="Bold"
-               Margin="0,12,0,4"/>
+
+            <TextBlock FontWeight="Bold"
+           Margin="0,12,0,4">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Text" Value="TABLE / GROUP" />
+
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedDirection}" Value="ExportOneCsv">
+                                <Setter Property="Text" Value="VIEW TO EXPORT" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
 
             <!-- Inbound = ALL -->
             <TextBlock Text="ALL"
@@ -57,9 +70,16 @@
                     <Style TargetType="ComboBox">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
+                            
                             <DataTrigger Binding="{Binding SelectedDirection}" Value="Outbound">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
+
+
+                            <DataTrigger Binding="{Binding SelectedDirection}" Value="ExportOneCsv">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+
                         </Style.Triggers>
                     </Style>
                 </ComboBox.Style>
