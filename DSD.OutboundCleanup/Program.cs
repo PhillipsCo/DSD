@@ -20,11 +20,11 @@ namespace CisOutboundCleanup
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
 
-            var logPath = Path.GetFullPath(
-                Path.Combine(AppContext.BaseDirectory, "Logs", $"cleanup-{DateTime.Now:yyyyMMdd}.log")
-            );
+            //var logPath = Path.GetFullPath(
+            //    Path.Combine(AppContext.BaseDirectory, "Logs", $"cleanup-{DateTime.Now:yyyyMMdd}.log")
+            //);
 
-            Console.WriteLine($"Serilog log file path: {logPath}");
+            //Console.WriteLine($"Serilog log file path: {logPath}");
 
 
             try
