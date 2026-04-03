@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSD.ManagerService", "DSD.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSD.OutboundCleanup", "DSD.OutboundCleanup\DSD.OutboundCleanup.csproj", "{D30DDD53-0B2F-46BC-B02E-D2B1E5692CB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSD.LoadCsv", "DSD.LoadCsv\DSD.LoadCsv.csproj", "{8FE54D0D-CBD3-423C-803A-E1FC3C237860}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{D30DDD53-0B2F-46BC-B02E-D2B1E5692CB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D30DDD53-0B2F-46BC-B02E-D2B1E5692CB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D30DDD53-0B2F-46BC-B02E-D2B1E5692CB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FE54D0D-CBD3-423C-803A-E1FC3C237860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FE54D0D-CBD3-423C-803A-E1FC3C237860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FE54D0D-CBD3-423C-803A-E1FC3C237860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FE54D0D-CBD3-423C-803A-E1FC3C237860}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
