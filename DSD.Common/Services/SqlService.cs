@@ -35,7 +35,82 @@ namespace DSD.Common.Services
         //   group - API execution group (e.g., ALL, HFS)
         // Returns:
         //   List<TableApiName> containing API details for execution
+        public async Task<List<PurgeJob>> GetPurgeJobsAsync(string catalog)
+        {
+            const string sql = @"
+SELECT
+    jobKey,
+    jobName,
+    jobEnabled,
+    jobTimeout,
+    jobSQL,
+    jobRetentionDays
+FROM dbo.DSD_EOD
+ORDER BY EntryNo;";
 
+            var jobs = new List<PurgeJob>();
+
+            try
+            {
+                var connectionString = CustomerConnectionString(catalog);
+
+                await using var conn = new SqlConnection(connectionString);
+                await using var cmd = new SqlCommand(sql, conn)
+                {
+                    CommandType = CommandType.Text,
+                    CommandTimeout = 120
+                };
+
+                await conn.OpenAsync().ConfigureAwait(false);
+
+                await using var rdr = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess)
+                                              .ConfigureAwait(false);
+
+                // Use ordinals (faster + less error-prone)
+                int oKey = rdr.GetOrdinal("jobKey");
+                int oName = rdr.GetOrdinal("jobName");
+                int oEnabled = rdr.GetOrdinal("jobEnabled");
+                int oTimeout = rdr.GetOrdinal("jobTimeout");
+                int oSql = rdr.GetOrdinal("jobSQL");
+                int oRetention = rdr.GetOrdinal("jobRetentionDays");
+
+                while (await rdr.ReadAsync().ConfigureAwait(false))
+                {
+                    // Start with defaults from your model (jobTimeout=120, jobRetentionDays=30)
+                    var job = new PurgeJob
+                    {
+                        jobKey = rdr.IsDBNull(oKey) ? "" : rdr.GetString(oKey),
+                        jobName = rdr.IsDBNull(oName) ? "" : rdr.GetString(oName),
+                        jobEnabled = !rdr.IsDBNull(oEnabled) && rdr.GetBoolean(oEnabled),
+                        jobTimeout = rdr.IsDBNull(oTimeout) ? 120 : rdr.GetInt32(oTimeout),
+                        jobSql = rdr.IsDBNull(oSql) ? "" : rdr.GetString(oSql),
+                        
+                        jobRetentionDays = rdr.IsDBNull(oRetention) ? 120 : rdr.GetInt32(oRetention)
+                    };
+
+                    // Only overwrite defaults if DB has values
+                    //if (!rdr.IsDBNull(oTimeout))
+                    //    job.jobTimeout = rdr.GetInt32(oTimeout);
+
+                    //if (!rdr.IsDBNull(oRetention))
+                    //    job.jobRetentionDays = rdr.GetInt32(oRetention);
+
+                    jobs.Add(job);
+                }
+            }
+            catch (SqlException ex)
+            {
+                Log.Error(ex, "SQL error loading purge jobs from dbo.DSD_EOD in catalog {Catalog}", catalog);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Unexpected error loading purge jobs from dbo.DSD_EOD in catalog {Catalog}", catalog);
+                throw;
+            }
+
+            return jobs;
+        }
         public sealed record SqlExecResult(
             bool Success,
             int RowsAffected,
@@ -384,7 +459,7 @@ namespace DSD.Common.Services
         public async Task<SqlExecResult> ExecuteDeleteAsync(
         string catalog,
         string sql,
-        Dictionary<string, object>? parameters = null,
+        int retentionDays,
         int? commandTimeoutSeconds = null)
         {
             try
@@ -409,16 +484,14 @@ namespace DSD.Common.Services
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandTimeout = commandTimeoutSeconds ?? 30;
 
-                if (parameters is not null)
-                {
-                    foreach (var kvp in parameters)
+                cmd.Parameters.Add(
+                    new SqlParameter("@RetentionDays", SqlDbType.Int)
                     {
-                        var p = cmd.Parameters.AddWithValue("@" + kvp.Key, kvp.Value ?? DBNull.Value);
+                        Value = retentionDays
+                    });
 
-                        // Optional: prevent AddWithValue pitfalls for ints
-                         if (kvp.Value is int) p.SqlDbType = SqlDbType.Int;
-                    }
-                }
+
+
 
                 var rows = await cmd.ExecuteNonQueryAsync();
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DSD.LoadCsv.Runners
 {
-    
+
     public class LoadCsvAppRunner
     {
         private readonly SqlService _sqlService;
@@ -39,7 +39,7 @@ namespace DSD.LoadCsv.Runners
             var view = args.Length > 1 ? args[1] : "ALL";
             var sendCIS = args.Length > 2 ? args[2] : "N";
 
-            Log.Information("Sending data to CIS from {view} for {customerCode}",view, customerCode);
+            Log.Information("Sending data to CIS from {view} for {customerCode}", view, customerCode);
 
             AccessInfo accessInfo = null;
             try
@@ -48,10 +48,12 @@ namespace DSD.LoadCsv.Runners
                 accessInfo = await _sqlService.GetAccessInfoAsync(customerCode);
                 Log.Information("AccessInfo retrieved for customer {CustomerCode}", customerCode);
                 //Step 2 Export Csv File
-
+                await _csvExportService.ExportViewToCsvAsync(accessInfo.InitialCatalog, accessInfo.ftpLocalFilePath, view);
+                Log.Information("CSV export of {view} completed.", view);
                 //Step 3 FTP Csv File
-
-                //Step 4 Remove Csv File
+                var ftpResult = _ftpService.ProcessUploadFiles(accessInfo.ftpHost, accessInfo.ftpUser, accessInfo.ftpPass, accessInfo.ftpRemoteFilePath, accessInfo.ftpLocalFilePath);
+                Log.Information("FTP upload completed.");
+             
 
 
             }
@@ -61,4 +63,5 @@ namespace DSD.LoadCsv.Runners
                 Log.Error(ex, "Error occurred during outbound process");
             }
         }
+    }
 }

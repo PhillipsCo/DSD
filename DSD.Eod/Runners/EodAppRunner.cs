@@ -35,62 +35,43 @@ namespace DSD.Eod.Runners
                 var customerCode = args.Length > 0 ? args[0] : "DEMO"; // Default customer code if not provided
 
                 Log.Information("Starting EOD purge for customer {CustomerCode}", customerCode);
-            //STEP 1
+            //STEP 1 Get AccessInfo for Customer
                 AccessInfo accessInfo = null; // Holds database and FTP credentials for the customer
                 Log.Information("Attempting to get accessInfo for {CustomerCode}", customerCode);
                 accessInfo = await _sqlService.GetAccessInfoAsync(customerCode);
-            //Step2
-            var purgeSection = _configuration.GetSection("PurgeJobs");
+            //Step2 Load EOD model for this customer from DSD_EOD table
+            
+            var purgeConfig = new PurgeConfig();
+            var jobs = await _sqlService.GetPurgeJobsAsync(accessInfo.InitialCatalog);
+            purgeConfig.Jobs = jobs;
+            
+            //Step3 Iterate through list of jobs
 
-            if (!purgeSection.Exists())
+            foreach (var job in jobs)
             {
-                Log.Error("Missing configuration section 'PurgeJobs' in appsettings.json.");
-                return;
-            }
-
-            var purgeConfig = purgeSection.Get<PurgeConfig>();
-            if (purgeConfig is null)
-            {
-                Log.Error("Failed to bind 'PurgeJobs' to PurgeConfig. Check JSON structure.");
-                return;
-            }
-                purgeConfig = _configuration
-               .GetSection("PurgeJobs")
-               .Get<PurgeConfig>();
-
-            //Step3
-
-
-            var jobsToRun = purgeConfig.Jobs
-                .Where(j => j.Enabled)
-                .OrderBy(j => j.Order)
-                .ToList();
-
-            foreach (var job in jobsToRun)
-            {
-               var timeout = job.CommandTimeoutSeconds ?? 60;
-               Log.Information("Running purge job {Order}: {Name}", job.Order, job.Name);
+              
+               Log.Information("Running purge job : {Name}",  job.jobName);
 
 
                var result = await _sqlService.ExecuteDeleteAsync(
                         catalog: accessInfo.InitialCatalog ?? "DEMO",
-                        sql: job.Sql,
-                        parameters: job.Parameters,
-                        commandTimeoutSeconds: timeout
+                        sql: job.jobSql,
+                         job.jobRetentionDays,
+                        job.jobTimeout
                     );
 
                 if (result.Success)
                 {
-                    Log.Information(job.PassMessage);
-                    Log.Information("PASS: {JobName} | RowsAffected={Rows}", job.Name, result.RowsAffected);
+                    
+                    Log.Information("PASS: {JobName} | RowsAffected={Rows}", job.jobName, result.RowsAffected);
                 }
                 else
                 {
-                    Log.Error("FAIL: {JobName} | Error={Error}", job.Name, result.ErrorMessage);
+                    Log.Error("FAIL: {JobName} | Error={Error}", job.jobName, result.ErrorMessage);
                     await _emailService.SendEmailAsync(
                             accessInfo,
                             subject: "EOD delete Failure",
-                            content: $"{job.Name} failed Error = {result.ErrorMessage}",
+                            content: $"{job.jobName} failed Error = {result.ErrorMessage}",
                             attachmentPaths: null,
                             true
                         );

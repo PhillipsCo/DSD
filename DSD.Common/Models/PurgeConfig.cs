@@ -32,17 +32,15 @@ namespace DSD.Common.Models
 
     public class PurgeJob
     {
-        public string Name { get; set; } = "";
-        public bool Enabled { get; set; } = true;
-        public int Order { get; set; } = 0;
+        public string jobKey { get; set; } = "";
+        public string jobName { get; set; } = "";
+        public bool jobEnabled { get; set; } = true;
+        public int jobTimeout { get; set; } = 120;
 
-        public string Sql { get; set; } = "";
+        public string jobSql { get; set; } = "";
+        public int jobRetentionDays { get; set; } = 30;
 
-        public Dictionary<string, object> Parameters { get; set; } = new();
 
-        public int? CommandTimeoutSeconds { get; set; }
 
-        public string PassMessage { get; set; } = "PASS";
-        public string FailMessage { get; set; } = "FAIL";
     }
 }

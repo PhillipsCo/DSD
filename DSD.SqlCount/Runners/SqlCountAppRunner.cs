@@ -1,6 +1,7 @@
 ﻿using DSD.Common.Models;
 using DSD.Common.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Graph.Models.ExternalConnectors;
 using Serilog;
 
 namespace DSD.SqlCount.Runners
@@ -154,6 +155,10 @@ Error Details:
             //var attachments = new List<string>();
 
             // STEP 3: Send the email
+            var emailto = _configuration.GetValue<string>("emailTo");
+            //Console.WriteLine(emailto);
+            accessInfo.email_recipient = emailto;
+            //Console.WriteLine(accessInfo.email_recipient);
             await _emailService.SendEmailAsync(
                 accessInfo,
                 subject: subject,
