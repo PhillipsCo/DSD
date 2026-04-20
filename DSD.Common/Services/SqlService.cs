@@ -38,15 +38,15 @@ namespace DSD.Common.Services
         public async Task<List<PurgeJob>> GetPurgeJobsAsync(string catalog)
         {
             const string sql = @"
-SELECT
-    jobKey,
-    jobName,
-    jobEnabled,
-    jobTimeout,
-    jobSQL,
-    jobRetentionDays
-FROM dbo.DSD_EOD
-ORDER BY EntryNo;";
+                                    SELECT
+                                        jobKey,
+                                        jobName,
+                                        jobEnabled,
+                                        jobTimeout,
+                                        jobSQL,
+                                        jobRetentionDays
+                                    FROM dbo.DSD_EOD
+                                    ORDER BY EntryNo;";
 
             var jobs = new List<PurgeJob>();
 
@@ -76,8 +76,7 @@ ORDER BY EntryNo;";
 
                 while (await rdr.ReadAsync().ConfigureAwait(false))
                 {
-                    // Start with defaults from your model (jobTimeout=120, jobRetentionDays=30)
-                    var job = new PurgeJob
+                      var job = new PurgeJob
                     {
                         jobKey = rdr.IsDBNull(oKey) ? "" : rdr.GetString(oKey),
                         jobName = rdr.IsDBNull(oName) ? "" : rdr.GetString(oName),
@@ -88,12 +87,7 @@ ORDER BY EntryNo;";
                         jobRetentionDays = rdr.IsDBNull(oRetention) ? 120 : rdr.GetInt32(oRetention)
                     };
 
-                    // Only overwrite defaults if DB has values
-                    //if (!rdr.IsDBNull(oTimeout))
-                    //    job.jobTimeout = rdr.GetInt32(oTimeout);
-
-                    //if (!rdr.IsDBNull(oRetention))
-                    //    job.jobRetentionDays = rdr.GetInt32(oRetention);
+                
 
                     jobs.Add(job);
                 }

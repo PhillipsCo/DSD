@@ -169,7 +169,7 @@ namespace DSD.Outbound.Runners
                         var latestLogFile = logFiles.OrderByDescending(File.GetLastWriteTime).First();
 
                         // ✅ Copy to a fixed file name that gets overwritten each run
-                        var emailLogFile = Path.Combine(logDirectory, "EmailLog.txt");
+                        var emailLogFile = Path.Combine(logDirectory, "EmailtheLog.txt");
                         File.Copy(latestLogFile, emailLogFile, true); // Overwrite if exists               
                         var status = processFailed ? "FAILURE" : "SUCCESS";
                         var subject = $"Outbound Process {status} - {customerCode} - {DateTime.Now:yyyy-MM-dd}";

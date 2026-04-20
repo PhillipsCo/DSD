@@ -28,6 +28,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSD.OutboundCleanup", "DSD.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSD.LoadCsv", "DSD.LoadCsv\DSD.LoadCsv.csproj", "{8FE54D0D-CBD3-423C-803A-E1FC3C237860}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSD.emailLog", "DSD.emailLog\DSD.emailLog.csproj", "{86EF1301-4569-4B9E-9C76-676DCF0517B1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{75FCDD4C-795D-4A18-92E7-39698B6C2DD3} = {75FCDD4C-795D-4A18-92E7-39698B6C2DD3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +79,10 @@ Global
 		{8FE54D0D-CBD3-423C-803A-E1FC3C237860}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FE54D0D-CBD3-423C-803A-E1FC3C237860}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FE54D0D-CBD3-423C-803A-E1FC3C237860}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86EF1301-4569-4B9E-9C76-676DCF0517B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86EF1301-4569-4B9E-9C76-676DCF0517B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86EF1301-4569-4B9E-9C76-676DCF0517B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86EF1301-4569-4B9E-9C76-676DCF0517B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
